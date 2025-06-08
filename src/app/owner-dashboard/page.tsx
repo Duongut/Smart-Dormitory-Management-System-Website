@@ -375,32 +375,352 @@ export default function OwnerDashboard() {
 
         {/* Other tabs would be implemented similarly */}
         {activeTab === "tenants" && (
-          <div className="bg-white p-8 rounded-lg shadow text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Quản lý khách thuê</h2>
-            <p className="text-gray-600 mb-6">Xem và quản lý thông tin tất cả khách thuê</p>
-            <Link href="/owner-dashboard/tenants" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors inline-block">
-              Xem chi tiết
-            </Link>
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">Quản lý khách thuê</h2>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                + Thêm khách thuê mới
+              </button>
+            </div>
+
+            <div className="bg-white shadow rounded-lg overflow-hidden">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Khách thuê
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Phòng
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Điện thoại
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Ngày bắt đầu
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Trạng thái
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Thao tác
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {[
+                    { id: 1, name: "Nguyễn Văn A", room: "101", phone: "0123456789", startDate: "01/01/2024", status: "active" },
+                    { id: 2, name: "Trần Thị B", room: "102", phone: "0987654321", startDate: "15/01/2024", status: "active" },
+                    { id: 3, name: "Lê Văn C", room: "201", phone: "0369852147", startDate: "01/02/2024", status: "pending" },
+                  ].map((tenant) => (
+                    <tr key={tenant.id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="h-10 w-10 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                            {tenant.name.charAt(0)}
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{tenant.name}</div>
+                            <div className="text-sm text-gray-500">ID: {tenant.id.toString().padStart(3, '0')}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {tenant.room}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {tenant.phone}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {tenant.startDate}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 py-1 text-xs rounded-full ${
+                          tenant.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {tenant.status === 'active' ? 'Đang thuê' : 'Chờ xác nhận'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button className="text-blue-600 hover:text-blue-900 mr-3">Xem</button>
+                        <button className="text-green-600 hover:text-green-900 mr-3">Sửa</button>
+                        <button className="text-red-600 hover:text-red-900">Xóa</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
         {activeTab === "reports" && (
-          <div className="bg-white p-8 rounded-lg shadow text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Báo cáo sự cố</h2>
-            <p className="text-gray-600 mb-6">Quản lý và xử lý các báo cáo sự cố từ khách thuê</p>
-            <Link href="/owner-dashboard/reports" className="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors inline-block">
-              Xem chi tiết
-            </Link>
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">Báo cáo sự cố</h2>
+              <div className="flex space-x-3">
+                <select className="border border-gray-300 rounded-lg px-3 py-2">
+                  <option>Tất cả trạng thái</option>
+                  <option>Chờ xử lý</option>
+                  <option>Đang xử lý</option>
+                  <option>Hoàn thành</option>
+                </select>
+                <select className="border border-gray-300 rounded-lg px-3 py-2">
+                  <option>Tất cả mức độ</option>
+                  <option>Cao</option>
+                  <option>Trung bình</option>
+                  <option>Thấp</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="bg-white shadow rounded-lg overflow-hidden">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Sự cố
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Phòng
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Khách thuê
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Mức độ
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Ngày báo cáo
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Trạng thái
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Thao tác
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {[
+                    {
+                      id: 1,
+                      issue: "Máy lạnh không hoạt động",
+                      room: "101",
+                      tenant: "Nguyễn Văn A",
+                      priority: "high",
+                      date: "2024-02-20",
+                      status: "in-progress",
+                      description: "Máy lạnh không thổi lạnh từ 2 ngày nay"
+                    },
+                    {
+                      id: 2,
+                      issue: "Vòi nước bị rò rỉ",
+                      room: "102",
+                      tenant: "Trần Thị B",
+                      priority: "medium",
+                      date: "2024-02-18",
+                      status: "completed",
+                      description: "Vòi lavabo trong phòng tắm bị rò nước"
+                    },
+                    {
+                      id: 3,
+                      issue: "Bóng đèn hỏng",
+                      room: "201",
+                      tenant: "Lê Văn C",
+                      priority: "low",
+                      date: "2024-02-25",
+                      status: "pending",
+                      description: "Bóng đèn phòng ngủ không sáng"
+                    }
+                  ].map((report) => (
+                    <tr key={report.id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">{report.issue}</div>
+                          <div className="text-sm text-gray-500 max-w-xs truncate">{report.description}</div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {report.room}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {report.tenant}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 py-1 text-xs rounded-full ${
+                          report.priority === 'high' ? 'bg-red-100 text-red-800' :
+                          report.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-green-100 text-green-800'
+                        }`}>
+                          {report.priority === 'high' ? 'Cao' :
+                           report.priority === 'medium' ? 'Trung bình' : 'Thấp'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {report.date}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(report.status)}`}>
+                          {getStatusText(report.status)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button className="text-blue-600 hover:text-blue-900 mr-3">Xem</button>
+                        <button className="text-green-600 hover:text-green-900 mr-3">Cập nhật</button>
+                        {report.status === 'pending' && (
+                          <button className="text-orange-600 hover:text-orange-900">Xử lý</button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
         {activeTab === "revenue" && (
-          <div className="bg-white p-8 rounded-lg shadow text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Báo cáo doanh thu</h2>
-            <p className="text-gray-600 mb-6">Theo dõi và phân tích doanh thu, chi phí và lợi nhuận</p>
-            <Link href="/owner-dashboard/revenue" className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors inline-block">
-              Xem chi tiết
-            </Link>
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">Báo cáo doanh thu</h2>
+              <div className="flex space-x-3">
+                <select className="border border-gray-300 rounded-lg px-3 py-2">
+                  <option>Tháng này</option>
+                  <option>Tháng trước</option>
+                  <option>3 tháng gần đây</option>
+                  <option>6 tháng gần đây</option>
+                  <option>Năm nay</option>
+                </select>
+                <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                  Xuất báo cáo
+                </button>
+              </div>
+            </div>
+
+            {/* Revenue Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-6 rounded-2xl text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-green-100 text-sm">Tổng doanh thu</p>
+                    <p className="text-2xl font-bold">15.2M</p>
+                    <p className="text-green-100 text-sm">+12% so với tháng trước</p>
+                  </div>
+                  <div className="text-3xl">💰</div>
+                </div>
+              </div>
+              <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-6 rounded-2xl text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-blue-100 text-sm">Tiền phòng</p>
+                    <p className="text-2xl font-bold">12.0M</p>
+                    <p className="text-blue-100 text-sm">79% tổng doanh thu</p>
+                  </div>
+                  <div className="text-3xl">🏠</div>
+                </div>
+              </div>
+              <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-6 rounded-2xl text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-purple-100 text-sm">Tiền điện nước</p>
+                    <p className="text-2xl font-bold">2.8M</p>
+                    <p className="text-purple-100 text-sm">18% tổng doanh thu</p>
+                  </div>
+                  <div className="text-3xl">⚡</div>
+                </div>
+              </div>
+              <div className="bg-gradient-to-r from-orange-500 to-red-500 p-6 rounded-2xl text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-orange-100 text-sm">Phí dịch vụ</p>
+                    <p className="text-2xl font-bold">400K</p>
+                    <p className="text-orange-100 text-sm">3% tổng doanh thu</p>
+                  </div>
+                  <div className="text-3xl">🔧</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Revenue Chart Placeholder */}
+            <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Biểu đồ doanh thu theo tháng</h3>
+              <div className="h-64 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-4xl mb-4">📊</div>
+                  <p className="text-gray-600">Biểu đồ doanh thu sẽ được hiển thị ở đây</p>
+                  <p className="text-sm text-gray-500 mt-2">Tích hợp với thư viện Chart.js hoặc Recharts</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Revenue Details Table */}
+            <div className="bg-white shadow rounded-lg overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900">Chi tiết doanh thu theo phòng</h3>
+              </div>
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Phòng
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Khách thuê
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Tiền phòng
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Điện nước
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Dịch vụ
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Tổng cộng
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Trạng thái
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {[
+                    { room: "101", tenant: "Nguyễn Văn A", rent: 3000000, utilities: 800000, service: 100000, status: "paid" },
+                    { room: "102", tenant: "Trần Thị B", rent: 3200000, utilities: 750000, service: 100000, status: "paid" },
+                    { room: "201", tenant: "Lê Văn C", rent: 3500000, utilities: 900000, service: 100000, status: "pending" },
+                    { room: "202", tenant: "Phạm Thị D", rent: 3500000, utilities: 850000, service: 100000, status: "paid" },
+                  ].map((item, index) => (
+                    <tr key={index}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {item.room}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.tenant}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.rent.toLocaleString()}đ
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.utilities.toLocaleString()}đ
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.service.toLocaleString()}đ
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {(item.rent + item.utilities + item.service).toLocaleString()}đ
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(item.status)}`}>
+                          {getStatusText(item.status)}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
         </main>
