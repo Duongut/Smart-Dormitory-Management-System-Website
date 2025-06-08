@@ -27,6 +27,51 @@ const mockReports = [
 export default function OwnerDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
 
+  // Modal states
+  const [showRoomModal, setShowRoomModal] = useState(false);
+  const [showTenantModal, setShowTenantModal] = useState(false);
+  const [showBillModal, setShowBillModal] = useState(false);
+  const [showReportDetailModal, setShowReportDetailModal] = useState(false);
+
+  // Form states
+  const [editingRoom, setEditingRoom] = useState<any>(null);
+  const [editingTenant, setEditingTenant] = useState<any>(null);
+  const [editingBill, setEditingBill] = useState<any>(null);
+  const [selectedReport, setSelectedReport] = useState<any>(null);
+
+  // Form data
+  const [roomForm, setRoomForm] = useState({
+    number: "",
+    price: "",
+    area: "",
+    status: "available",
+    description: "",
+    amenities: [] as string[]
+  });
+
+  const [tenantForm, setTenantForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    idCard: "",
+    room: "",
+    startDate: "",
+    deposit: "",
+    emergencyContact: "",
+    emergencyPhone: ""
+  });
+
+  const [billForm, setBillForm] = useState({
+    room: "",
+    tenant: "",
+    type: "monthly",
+    amount: "",
+    dueDate: "",
+    description: "",
+    electricUsage: "",
+    waterUsage: ""
+  });
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "occupied": return "bg-green-100 text-green-800";
@@ -53,6 +98,139 @@ export default function OwnerDashboard() {
       case "completed": return "Hoàn thành";
       default: return status;
     }
+  };
+
+  // Modal handlers
+  const openRoomModal = (room?: any) => {
+    if (room) {
+      setEditingRoom(room);
+      setRoomForm({
+        number: room.number,
+        price: room.price.toString(),
+        area: room.area.toString(),
+        status: room.status,
+        description: room.description || "",
+        amenities: room.amenities || []
+      });
+    } else {
+      setEditingRoom(null);
+      setRoomForm({
+        number: "",
+        price: "",
+        area: "",
+        status: "available",
+        description: "",
+        amenities: []
+      });
+    }
+    setShowRoomModal(true);
+  };
+
+  const openTenantModal = (tenant?: any) => {
+    if (tenant) {
+      setEditingTenant(tenant);
+      setTenantForm({
+        name: tenant.name,
+        email: tenant.email || "",
+        phone: tenant.phone,
+        idCard: tenant.idCard || "",
+        room: tenant.room,
+        startDate: tenant.startDate,
+        deposit: tenant.deposit?.toString() || "",
+        emergencyContact: tenant.emergencyContact || "",
+        emergencyPhone: tenant.emergencyPhone || ""
+      });
+    } else {
+      setEditingTenant(null);
+      setTenantForm({
+        name: "",
+        email: "",
+        phone: "",
+        idCard: "",
+        room: "",
+        startDate: "",
+        deposit: "",
+        emergencyContact: "",
+        emergencyPhone: ""
+      });
+    }
+    setShowTenantModal(true);
+  };
+
+  const openBillModal = (bill?: any) => {
+    if (bill) {
+      setEditingBill(bill);
+      setBillForm({
+        room: bill.room,
+        tenant: bill.tenant,
+        type: bill.type,
+        amount: bill.amount.toString(),
+        dueDate: bill.dueDate,
+        description: bill.description || "",
+        electricUsage: bill.electricUsage?.toString() || "",
+        waterUsage: bill.waterUsage?.toString() || ""
+      });
+    } else {
+      setEditingBill(null);
+      setBillForm({
+        room: "",
+        tenant: "",
+        type: "monthly",
+        amount: "",
+        dueDate: "",
+        description: "",
+        electricUsage: "",
+        waterUsage: ""
+      });
+    }
+    setShowBillModal(true);
+  };
+
+  const openReportDetail = (report: any) => {
+    setSelectedReport(report);
+    setShowReportDetailModal(true);
+  };
+
+  // Form submit handlers
+  const handleRoomSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log(editingRoom ? "Updating room:" : "Creating room:", roomForm);
+    setShowRoomModal(false);
+    alert(editingRoom ? "Cập nhật phòng thành công!" : "Thêm phòng mới thành công!");
+  };
+
+  const handleTenantSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log(editingTenant ? "Updating tenant:" : "Creating tenant:", tenantForm);
+    setShowTenantModal(false);
+    alert(editingTenant ? "Cập nhật khách thuê thành công!" : "Thêm khách thuê mới thành công!");
+  };
+
+  const handleBillSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log(editingBill ? "Updating bill:" : "Creating bill:", billForm);
+    setShowBillModal(false);
+    alert(editingBill ? "Cập nhật hóa đơn thành công!" : "Tạo hóa đơn mới thành công!");
+  };
+
+  const handleDeleteRoom = (roomId: string) => {
+    if (confirm("Bạn có chắc chắn muốn xóa phòng này?")) {
+      console.log("Deleting room:", roomId);
+      alert("Xóa phòng thành công!");
+    }
+  };
+
+  const handleDeleteTenant = (tenantId: string) => {
+    if (confirm("Bạn có chắc chắn muốn xóa khách thuê này?")) {
+      console.log("Deleting tenant:", tenantId);
+      alert("Xóa khách thuê thành công!");
+    }
+  };
+
+  const handleUpdateReportStatus = (reportId: string, newStatus: string) => {
+    console.log("Updating report status:", reportId, newStatus);
+    alert(`Cập nhật trạng thái báo cáo thành "${getStatusText(newStatus)}" thành công!`);
+    setShowReportDetailModal(false);
   };
 
   return (
@@ -240,8 +418,12 @@ export default function OwnerDashboard() {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-gray-900">Quản lý phòng trọ</h2>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                + Thêm phòng mới
+              <button
+                onClick={() => openRoomModal()}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"
+              >
+                <span className="mr-2">+</span>
+                Thêm phòng mới
               </button>
             </div>
             
@@ -306,8 +488,12 @@ export default function OwnerDashboard() {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-gray-900">Quản lý hóa đơn</h2>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                + Tạo hóa đơn mới
+              <button
+                onClick={() => openBillModal()}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"
+              >
+                <span className="mr-2">+</span>
+                Tạo hóa đơn mới
               </button>
             </div>
             
@@ -362,8 +548,24 @@ export default function OwnerDashboard() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button className="text-blue-600 hover:text-blue-900 mr-3">Xem</button>
-                        <button className="text-green-600 hover:text-green-900">Nhắc nhở</button>
+                        <button
+                          onClick={() => openBillModal(bill)}
+                          className="text-blue-600 hover:text-blue-900 mr-3"
+                        >
+                          Xem
+                        </button>
+                        <button
+                          onClick={() => openBillModal(bill)}
+                          className="text-green-600 hover:text-green-900 mr-3"
+                        >
+                          Sửa
+                        </button>
+                        <button
+                          onClick={() => alert("Đã gửi nhắc nhở thanh toán!")}
+                          className="text-orange-600 hover:text-orange-900"
+                        >
+                          Nhắc nhở
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -378,8 +580,12 @@ export default function OwnerDashboard() {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-gray-900">Quản lý khách thuê</h2>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                + Thêm khách thuê mới
+              <button
+                onClick={() => openTenantModal()}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"
+              >
+                <span className="mr-2">+</span>
+                Thêm khách thuê mới
               </button>
             </div>
 
@@ -442,9 +648,24 @@ export default function OwnerDashboard() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button className="text-blue-600 hover:text-blue-900 mr-3">Xem</button>
-                        <button className="text-green-600 hover:text-green-900 mr-3">Sửa</button>
-                        <button className="text-red-600 hover:text-red-900">Xóa</button>
+                        <button
+                          onClick={() => openTenantModal(tenant)}
+                          className="text-blue-600 hover:text-blue-900 mr-3"
+                        >
+                          Xem
+                        </button>
+                        <button
+                          onClick={() => openTenantModal(tenant)}
+                          className="text-green-600 hover:text-green-900 mr-3"
+                        >
+                          Sửa
+                        </button>
+                        <button
+                          onClick={() => handleDeleteTenant(tenant.id.toString())}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Xóa
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -566,10 +787,25 @@ export default function OwnerDashboard() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button className="text-blue-600 hover:text-blue-900 mr-3">Xem</button>
-                        <button className="text-green-600 hover:text-green-900 mr-3">Cập nhật</button>
+                        <button
+                          onClick={() => openReportDetail(report)}
+                          className="text-blue-600 hover:text-blue-900 mr-3"
+                        >
+                          Xem
+                        </button>
+                        <button
+                          onClick={() => openReportDetail(report)}
+                          className="text-green-600 hover:text-green-900 mr-3"
+                        >
+                          Cập nhật
+                        </button>
                         {report.status === 'pending' && (
-                          <button className="text-orange-600 hover:text-orange-900">Xử lý</button>
+                          <button
+                            onClick={() => handleUpdateReportStatus(report.id.toString(), 'in-progress')}
+                            className="text-orange-600 hover:text-orange-900"
+                          >
+                            Xử lý
+                          </button>
                         )}
                       </td>
                     </tr>
@@ -725,6 +961,555 @@ export default function OwnerDashboard() {
         )}
         </main>
       </div>
+
+      {/* Room Modal */}
+      {showRoomModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900">
+                {editingRoom ? "Chỉnh sửa phòng" : "Thêm phòng mới"}
+              </h3>
+              <p className="text-gray-600 mt-1">
+                {editingRoom ? "Cập nhật thông tin phòng" : "Nhập thông tin phòng mới"}
+              </p>
+            </div>
+            <form onSubmit={handleRoomSubmit} className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Số phòng *
+                  </label>
+                  <input
+                    type="text"
+                    value={roomForm.number}
+                    onChange={(e) => setRoomForm({...roomForm, number: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="VD: 101, 102..."
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Giá thuê (VNĐ) *
+                  </label>
+                  <input
+                    type="number"
+                    value={roomForm.price}
+                    onChange={(e) => setRoomForm({...roomForm, price: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="VD: 3000000"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Diện tích (m²) *
+                  </label>
+                  <input
+                    type="number"
+                    value={roomForm.area}
+                    onChange={(e) => setRoomForm({...roomForm, area: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="VD: 25"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Trạng thái
+                  </label>
+                  <select
+                    value={roomForm.status}
+                    onChange={(e) => setRoomForm({...roomForm, status: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="available">Trống</option>
+                    <option value="occupied">Đã thuê</option>
+                    <option value="maintenance">Bảo trì</option>
+                  </select>
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Mô tả phòng
+                  </label>
+                  <textarea
+                    value={roomForm.description}
+                    onChange={(e) => setRoomForm({...roomForm, description: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    rows={3}
+                    placeholder="Mô tả về phòng, vị trí, đặc điểm..."
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tiện nghi
+                  </label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {["Máy lạnh", "Tủ lạnh", "Máy nước nóng", "WiFi", "Giường", "Tủ quần áo", "Bàn học", "Ban công"].map((amenity) => (
+                      <label key={amenity} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={roomForm.amenities.includes(amenity)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setRoomForm({...roomForm, amenities: [...roomForm.amenities, amenity]});
+                            } else {
+                              setRoomForm({...roomForm, amenities: roomForm.amenities.filter(a => a !== amenity)});
+                            }
+                          }}
+                          className="mr-2"
+                        />
+                        <span className="text-sm">{amenity}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex space-x-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowRoomModal(false)}
+                  className="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  {editingRoom ? "Cập nhật" : "Thêm phòng"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Tenant Modal */}
+      {showTenantModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900">
+                {editingTenant ? "Chỉnh sửa khách thuê" : "Thêm khách thuê mới"}
+              </h3>
+              <p className="text-gray-600 mt-1">
+                {editingTenant ? "Cập nhật thông tin khách thuê" : "Nhập thông tin khách thuê mới"}
+              </p>
+            </div>
+            <form onSubmit={handleTenantSubmit} className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Họ và tên *
+                  </label>
+                  <input
+                    type="text"
+                    value={tenantForm.name}
+                    onChange={(e) => setTenantForm({...tenantForm, name: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="VD: Nguyễn Văn A"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={tenantForm.email}
+                    onChange={(e) => setTenantForm({...tenantForm, email: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="VD: tenant@email.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Số điện thoại *
+                  </label>
+                  <input
+                    type="tel"
+                    value={tenantForm.phone}
+                    onChange={(e) => setTenantForm({...tenantForm, phone: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="VD: 0123456789"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    CCCD/CMND
+                  </label>
+                  <input
+                    type="text"
+                    value={tenantForm.idCard}
+                    onChange={(e) => setTenantForm({...tenantForm, idCard: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="VD: 123456789012"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Phòng *
+                  </label>
+                  <select
+                    value={tenantForm.room}
+                    onChange={(e) => setTenantForm({...tenantForm, room: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  >
+                    <option value="">Chọn phòng</option>
+                    <option value="101">Phòng 101</option>
+                    <option value="102">Phòng 102</option>
+                    <option value="103">Phòng 103</option>
+                    <option value="201">Phòng 201</option>
+                    <option value="202">Phòng 202</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ngày bắt đầu thuê *
+                  </label>
+                  <input
+                    type="date"
+                    value={tenantForm.startDate}
+                    onChange={(e) => setTenantForm({...tenantForm, startDate: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tiền cọc (VNĐ)
+                  </label>
+                  <input
+                    type="number"
+                    value={tenantForm.deposit}
+                    onChange={(e) => setTenantForm({...tenantForm, deposit: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="VD: 3000000"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Người liên hệ khẩn cấp
+                  </label>
+                  <input
+                    type="text"
+                    value={tenantForm.emergencyContact}
+                    onChange={(e) => setTenantForm({...tenantForm, emergencyContact: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="VD: Nguyễn Văn B (Anh trai)"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    SĐT liên hệ khẩn cấp
+                  </label>
+                  <input
+                    type="tel"
+                    value={tenantForm.emergencyPhone}
+                    onChange={(e) => setTenantForm({...tenantForm, emergencyPhone: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="VD: 0987654321"
+                  />
+                </div>
+              </div>
+
+              <div className="flex space-x-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowTenantModal(false)}
+                  className="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  {editingTenant ? "Cập nhật" : "Thêm khách thuê"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Bill Modal */}
+      {showBillModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900">
+                {editingBill ? "Chỉnh sửa hóa đơn" : "Tạo hóa đơn mới"}
+              </h3>
+              <p className="text-gray-600 mt-1">
+                {editingBill ? "Cập nhật thông tin hóa đơn" : "Nhập thông tin hóa đơn mới"}
+              </p>
+            </div>
+            <form onSubmit={handleBillSubmit} className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Phòng *
+                  </label>
+                  <select
+                    value={billForm.room}
+                    onChange={(e) => setBillForm({...billForm, room: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  >
+                    <option value="">Chọn phòng</option>
+                    <option value="101">Phòng 101</option>
+                    <option value="102">Phòng 102</option>
+                    <option value="103">Phòng 103</option>
+                    <option value="201">Phòng 201</option>
+                    <option value="202">Phòng 202</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Khách thuê *
+                  </label>
+                  <select
+                    value={billForm.tenant}
+                    onChange={(e) => setBillForm({...billForm, tenant: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  >
+                    <option value="">Chọn khách thuê</option>
+                    <option value="Nguyễn Văn A">Nguyễn Văn A</option>
+                    <option value="Trần Thị B">Trần Thị B</option>
+                    <option value="Lê Văn C">Lê Văn C</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Loại hóa đơn *
+                  </label>
+                  <select
+                    value={billForm.type}
+                    onChange={(e) => setBillForm({...billForm, type: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  >
+                    <option value="monthly">Tiền phòng hàng tháng</option>
+                    <option value="electric">Tiền điện</option>
+                    <option value="water">Tiền nước</option>
+                    <option value="service">Phí dịch vụ</option>
+                    <option value="other">Khác</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Hạn thanh toán *
+                  </label>
+                  <input
+                    type="date"
+                    value={billForm.dueDate}
+                    onChange={(e) => setBillForm({...billForm, dueDate: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Số điện (kWh)
+                  </label>
+                  <input
+                    type="number"
+                    value={billForm.electricUsage}
+                    onChange={(e) => setBillForm({...billForm, electricUsage: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="VD: 150"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Số nước (m³)
+                  </label>
+                  <input
+                    type="number"
+                    value={billForm.waterUsage}
+                    onChange={(e) => setBillForm({...billForm, waterUsage: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="VD: 15"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tổng tiền (VNĐ) *
+                  </label>
+                  <input
+                    type="number"
+                    value={billForm.amount}
+                    onChange={(e) => setBillForm({...billForm, amount: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="VD: 3500000"
+                    required
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ghi chú
+                  </label>
+                  <textarea
+                    value={billForm.description}
+                    onChange={(e) => setBillForm({...billForm, description: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    rows={3}
+                    placeholder="Ghi chú thêm về hóa đơn..."
+                  />
+                </div>
+              </div>
+
+              <div className="flex space-x-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowBillModal(false)}
+                  className="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  {editingBill ? "Cập nhật" : "Tạo hóa đơn"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Report Detail Modal */}
+      {showReportDetailModal && selectedReport && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900">Chi tiết báo cáo sự cố</h3>
+              <p className="text-gray-600 mt-1">Xem và cập nhật trạng thái xử lý</p>
+            </div>
+            <div className="p-6">
+              {/* Report Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Vấn đề</label>
+                    <p className="text-gray-900 font-medium">{selectedReport.issue}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Phòng</label>
+                    <p className="text-gray-900">{selectedReport.room}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Khách thuê</label>
+                    <p className="text-gray-900">{selectedReport.tenant}</p>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Ngày báo cáo</label>
+                    <p className="text-gray-900">{selectedReport.date}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Mức độ ưu tiên</label>
+                    <span className={`px-2 py-1 text-xs rounded-full ${
+                      selectedReport.priority === 'high' ? 'bg-red-100 text-red-800' :
+                      selectedReport.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-green-100 text-green-800'
+                    }`}>
+                      {selectedReport.priority === 'high' ? 'Cao' :
+                       selectedReport.priority === 'medium' ? 'Trung bình' : 'Thấp'}
+                    </span>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Trạng thái hiện tại</label>
+                    <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(selectedReport.status)}`}>
+                      {getStatusText(selectedReport.status)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Mô tả chi tiết</label>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-gray-900">{selectedReport.description}</p>
+                </div>
+              </div>
+
+              {/* Status Update */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Cập nhật trạng thái</label>
+                <div className="flex space-x-3">
+                  {selectedReport.status === 'pending' && (
+                    <button
+                      onClick={() => handleUpdateReportStatus(selectedReport.id.toString(), 'in-progress')}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Bắt đầu xử lý
+                    </button>
+                  )}
+                  {selectedReport.status === 'in-progress' && (
+                    <button
+                      onClick={() => handleUpdateReportStatus(selectedReport.id.toString(), 'completed')}
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      Hoàn thành
+                    </button>
+                  )}
+                  {selectedReport.status === 'completed' && (
+                    <div className="flex items-center text-green-600">
+                      <span className="mr-2">✅</span>
+                      <span>Đã hoàn thành xử lý</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Response */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Phản hồi cho khách thuê</label>
+                <textarea
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  rows={3}
+                  placeholder="Nhập phản hồi cho khách thuê về tiến độ xử lý..."
+                  defaultValue={selectedReport.response || ""}
+                />
+                <button className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                  Gửi phản hồi
+                </button>
+              </div>
+
+              {/* Actions */}
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowReportDetailModal(false)}
+                  className="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Đóng
+                </button>
+                <button
+                  onClick={() => {
+                    alert("Đã gửi thông báo cho khách thuê!");
+                    setShowReportDetailModal(false);
+                  }}
+                  className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  Thông báo khách thuê
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
