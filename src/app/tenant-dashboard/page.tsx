@@ -206,21 +206,31 @@ export default function TenantDashboard() {
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="bg-white p-6 rounded-lg shadow">
-                <div className="flex items-center">
-                  <div className="text-3xl mr-4">🏠</div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Phòng hiện tại</p>
-                    <Link href="/tenant-dashboard/room-details" className="text-2xl font-bold text-blue-600 hover:text-blue-800">101</Link>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="text-3xl mr-4">🏠</div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Phòng hiện tại</p>
+                      <Link href="/room-details/101" className="text-2xl font-bold text-blue-600 hover:text-blue-800">101</Link>
+                    </div>
                   </div>
+                  <Link href="/rate-room" className="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 transition-colors">
+                    ⭐ Đánh giá
+                  </Link>
                 </div>
               </div>
               <div className="bg-white p-6 rounded-lg shadow">
-                <div className="flex items-center">
-                  <div className="text-3xl mr-4">💳</div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Hóa đơn chưa thanh toán</p>
-                    <p className="text-2xl font-bold text-yellow-600">2</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="text-3xl mr-4">💳</div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Hóa đơn chưa thanh toán</p>
+                      <p className="text-2xl font-bold text-yellow-600">2</p>
+                    </div>
                   </div>
+                  <Link href="/payment-history" className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors">
+                    Lịch sử
+                  </Link>
                 </div>
               </div>
               <div className="bg-white p-6 rounded-lg shadow">
@@ -277,9 +287,35 @@ export default function TenantDashboard() {
                     </div>
                   ))}
                 </div>
-                <button className="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                <button
+                  onClick={() => setShowReportModal(true)}
+                  className="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+                >
                   + Báo cáo sự cố mới
                 </button>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Thao tác nhanh</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Link href="/messages" className="bg-blue-600 text-white p-4 rounded-lg text-center hover:bg-blue-700 transition-colors">
+                  <div className="text-2xl mb-2">💬</div>
+                  <div className="font-medium text-sm">Tin nhắn</div>
+                </Link>
+                <Link href="/notifications" className="bg-purple-600 text-white p-4 rounded-lg text-center hover:bg-purple-700 transition-colors">
+                  <div className="text-2xl mb-2">🔔</div>
+                  <div className="font-medium text-sm">Thông báo</div>
+                </Link>
+                <Link href="/payment-history" className="bg-green-600 text-white p-4 rounded-lg text-center hover:bg-green-700 transition-colors">
+                  <div className="text-2xl mb-2">📊</div>
+                  <div className="font-medium text-sm">Lịch sử</div>
+                </Link>
+                <Link href="/rate-room" className="bg-yellow-600 text-white p-4 rounded-lg text-center hover:bg-yellow-700 transition-colors">
+                  <div className="text-2xl mb-2">⭐</div>
+                  <div className="font-medium text-sm">Đánh giá</div>
+                </Link>
               </div>
             </div>
           </div>

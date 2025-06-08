@@ -259,6 +259,7 @@ export default function OwnerDashboard() {
               { id: "tenants", label: "Khách thuê", icon: "👥" },
               { id: "bills", label: "Hóa đơn", icon: "💳" },
               { id: "reports", label: "Báo cáo sự cố", icon: "🔧" },
+              { id: "reviews", label: "Đánh giá", icon: "⭐" },
               { id: "revenue", label: "Doanh thu", icon: "📈" },
             ].map((tab) => (
               <button
@@ -314,6 +315,7 @@ export default function OwnerDashboard() {
                     { id: "tenants", label: "Khách thuê" },
                     { id: "bills", label: "Hóa đơn" },
                     { id: "reports", label: "Báo cáo sự cố" },
+                    { id: "reviews", label: "Đánh giá phòng" },
                     { id: "revenue", label: "Doanh thu" },
                   ].find(tab => tab.id === activeTab)?.label}
                 </h2>
@@ -812,6 +814,201 @@ export default function OwnerDashboard() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {/* Reviews Tab */}
+        {activeTab === "reviews" && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">Đánh giá từ khách thuê</h2>
+              <div className="flex space-x-3">
+                <select className="border border-gray-300 rounded-lg px-3 py-2">
+                  <option>Tất cả đánh giá</option>
+                  <option>5 sao</option>
+                  <option>4 sao</option>
+                  <option>3 sao</option>
+                  <option>2 sao</option>
+                  <option>1 sao</option>
+                </select>
+                <select className="border border-gray-300 rounded-lg px-3 py-2">
+                  <option>Tất cả phòng</option>
+                  <option>Phòng 101</option>
+                  <option>Phòng 102</option>
+                  <option>Phòng 201</option>
+                  <option>Phòng 202</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Review Summary */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="bg-gradient-to-r from-yellow-400 to-orange-500 p-6 rounded-2xl text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-yellow-100 text-sm">Đánh giá trung bình</p>
+                    <p className="text-3xl font-bold">4.2</p>
+                    <div className="flex items-center mt-1">
+                      {[1,2,3,4,5].map(star => (
+                        <span key={star} className={`text-lg ${star <= 4 ? 'text-yellow-200' : 'text-yellow-400'}`}>⭐</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="text-4xl">⭐</div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-6 rounded-2xl text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-green-100 text-sm">Tổng đánh giá</p>
+                    <p className="text-3xl font-bold">24</p>
+                    <p className="text-green-100 text-sm">+3 tuần này</p>
+                  </div>
+                  <div className="text-4xl">📝</div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-6 rounded-2xl text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-blue-100 text-sm">Đánh giá tích cực</p>
+                    <p className="text-3xl font-bold">87%</p>
+                    <p className="text-blue-100 text-sm">4-5 sao</p>
+                  </div>
+                  <div className="text-4xl">👍</div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-6 rounded-2xl text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-purple-100 text-sm">Phòng được yêu thích</p>
+                    <p className="text-3xl font-bold">101</p>
+                    <p className="text-purple-100 text-sm">4.8/5 sao</p>
+                  </div>
+                  <div className="text-4xl">🏆</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Reviews List */}
+            <div className="space-y-4">
+              {[
+                {
+                  id: 1,
+                  tenant: "Nguyễn Văn A",
+                  room: "101",
+                  rating: 5,
+                  date: "2024-03-01",
+                  review: "Phòng rất sạch sẽ, tiện nghi đầy đủ. Chủ trọ nhiệt tình, hỗ trợ nhanh chóng khi có vấn đề. Vị trí thuận lợi, gần trường học và chợ. Rất hài lòng!",
+                  categories: {
+                    cleanliness: 5,
+                    facilities: 5,
+                    location: 4,
+                    value: 5,
+                    landlord: 5
+                  },
+                  anonymous: false
+                },
+                {
+                  id: 2,
+                  tenant: "Ẩn danh",
+                  room: "102",
+                  rating: 4,
+                  date: "2024-02-28",
+                  review: "Phòng khá tốt, giá cả hợp lý. Máy lạnh hoạt động tốt, internet ổn định. Chỉ có điều âm thanh cách âm chưa tốt lắm, đôi khi nghe thấy tiếng ồn từ phòng bên.",
+                  categories: {
+                    cleanliness: 4,
+                    facilities: 4,
+                    location: 4,
+                    value: 4,
+                    landlord: 4
+                  },
+                  anonymous: true
+                },
+                {
+                  id: 3,
+                  tenant: "Trần Thị B",
+                  room: "201",
+                  rating: 4,
+                  date: "2024-02-25",
+                  review: "Phòng thoáng mát, view đẹp. Chủ trọ dễ thương, luôn quan tâm đến khách thuê. Khu vực an ninh tốt, có bảo vệ 24/7.",
+                  categories: {
+                    cleanliness: 4,
+                    facilities: 4,
+                    location: 5,
+                    value: 4,
+                    landlord: 5
+                  },
+                  anonymous: false
+                }
+              ].map((review) => (
+                <div key={review.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center">
+                      <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                        {review.anonymous ? "?" : review.tenant.charAt(0)}
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">{review.tenant}</h4>
+                        <p className="text-sm text-gray-600">Phòng {review.room} • {review.date}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="flex items-center mb-1">
+                        {[1,2,3,4,5].map(star => (
+                          <span key={star} className={`text-lg ${star <= review.rating ? 'text-yellow-400' : 'text-gray-300'}`}>⭐</span>
+                        ))}
+                        <span className="ml-2 font-bold text-gray-900">{review.rating}/5</span>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        {review.rating >= 4.5 ? 'Xuất sắc' :
+                         review.rating >= 4 ? 'Rất tốt' :
+                         review.rating >= 3 ? 'Tốt' :
+                         review.rating >= 2 ? 'Trung bình' : 'Cần cải thiện'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <p className="text-gray-700 mb-4 leading-relaxed">{review.review}</p>
+
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
+                    {Object.entries(review.categories).map(([category, rating]) => (
+                      <div key={category} className="text-center">
+                        <p className="text-xs text-gray-600 mb-1">
+                          {category === 'cleanliness' ? 'Vệ sinh' :
+                           category === 'facilities' ? 'Tiện nghi' :
+                           category === 'location' ? 'Vị trí' :
+                           category === 'value' ? 'Giá trị' : 'Chủ trọ'}
+                        </p>
+                        <div className="flex justify-center">
+                          {[1,2,3,4,5].map(star => (
+                            <span key={star} className={`text-sm ${star <= rating ? 'text-yellow-400' : 'text-gray-300'}`}>⭐</span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+                    <div className="flex space-x-3">
+                      <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                        Phản hồi
+                      </button>
+                      <button className="text-green-600 hover:text-green-800 text-sm font-medium">
+                        Cảm ơn
+                      </button>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-500">
+                      <span className="mr-2">Hữu ích?</span>
+                      <button className="text-green-600 hover:text-green-800 mr-1">👍</button>
+                      <span className="text-xs">12</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
