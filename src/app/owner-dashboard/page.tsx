@@ -26,6 +26,124 @@ const mockReports = [
   { id: 3, room: "103", issue: "Đèn phòng bị hỏng", status: "completed", date: "2024-01-12", tenant: "Lê Văn C" },
 ];
 
+const mockConversations = [
+  {
+    id: 1,
+    tenant: {
+      name: "Nguyễn Văn A",
+      room: "101",
+      avatar: "👨",
+      phone: "0123456789"
+    },
+    lastMessage: "Chào chủ trọ, em muốn hỏi về việc thanh toán tiền phòng tháng này ạ",
+    lastMessageTime: "10:30",
+    unreadCount: 2,
+    isOnline: true,
+    messages: [
+      {
+        id: 1,
+        sender: "tenant",
+        content: "Chào chủ trọ ạ!",
+        timestamp: "09:15",
+        date: "2024-03-15"
+      },
+      {
+        id: 2,
+        sender: "owner",
+        content: "Chào bạn! Có gì cần hỗ trợ không?",
+        timestamp: "09:20",
+        date: "2024-03-15"
+      },
+      {
+        id: 3,
+        sender: "tenant",
+        content: "Em muốn hỏi về việc thanh toán tiền phòng tháng này ạ",
+        timestamp: "10:25",
+        date: "2024-03-15"
+      },
+      {
+        id: 4,
+        sender: "tenant",
+        content: "Em có thể chuyển khoản được không ạ?",
+        timestamp: "10:30",
+        date: "2024-03-15"
+      }
+    ]
+  },
+  {
+    id: 2,
+    tenant: {
+      name: "Trần Thị B",
+      room: "201",
+      avatar: "👩",
+      phone: "0987654321"
+    },
+    lastMessage: "Cảm ơn chủ trọ đã sửa vòi nước nhanh chóng ạ!",
+    lastMessageTime: "14:45",
+    unreadCount: 0,
+    isOnline: false,
+    messages: [
+      {
+        id: 1,
+        sender: "tenant",
+        content: "Chủ trọ ơi, vòi nước trong phòng em bị rò rỉ ạ",
+        timestamp: "08:30",
+        date: "2024-03-14"
+      },
+      {
+        id: 2,
+        sender: "owner",
+        content: "Mình sẽ gọi thợ lên sửa ngay hôm nay nhé!",
+        timestamp: "08:45",
+        date: "2024-03-14"
+      },
+      {
+        id: 3,
+        sender: "owner",
+        content: "Thợ sẽ lên vào lúc 2h chiều, bạn có ở nhà không?",
+        timestamp: "10:00",
+        date: "2024-03-14"
+      },
+      {
+        id: 4,
+        sender: "tenant",
+        content: "Dạ có ạ, em ở nhà cả ngày",
+        timestamp: "10:05",
+        date: "2024-03-14"
+      },
+      {
+        id: 5,
+        sender: "tenant",
+        content: "Cảm ơn chủ trọ đã sửa vòi nước nhanh chóng ạ!",
+        timestamp: "14:45",
+        date: "2024-03-14"
+      }
+    ]
+  },
+  {
+    id: 3,
+    tenant: {
+      name: "Lê Văn C",
+      room: "102",
+      avatar: "👨‍🎓",
+      phone: "0369852147"
+    },
+    lastMessage: "Chủ trọ cho em hỏi về quy định giờ giấc ạ",
+    lastMessageTime: "Hôm qua",
+    unreadCount: 1,
+    isOnline: false,
+    messages: [
+      {
+        id: 1,
+        sender: "tenant",
+        content: "Chủ trọ cho em hỏi về quy định giờ giấc ạ",
+        timestamp: "20:30",
+        date: "2024-03-14"
+      }
+    ]
+  }
+];
+
 export default function OwnerDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const { logout } = useAuth();
@@ -50,6 +168,8 @@ export default function OwnerDashboard() {
   const [selectedReport, setSelectedReport] = useState<any>(null);
   const [selectedReview, setSelectedReview] = useState<any>(null);
   const [responseText, setResponseText] = useState("");
+  const [selectedConversation, setSelectedConversation] = useState<any>(null);
+  const [newMessage, setNewMessage] = useState("");
 
   // Form data
   const [roomForm, setRoomForm] = useState({
@@ -260,6 +380,21 @@ export default function OwnerDashboard() {
     setSelectedReview(null);
   };
 
+  // Message handlers
+  const selectConversation = (conversation: any) => {
+    setSelectedConversation(conversation);
+  };
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newMessage.trim() && selectedConversation) {
+      console.log("Sending message:", newMessage, "to:", selectedConversation.tenant.name);
+      // In real app, this would send the message via API
+      alert("Tin nhắn đã được gửi!");
+      setNewMessage("");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
@@ -286,6 +421,7 @@ export default function OwnerDashboard() {
               { id: "tenants", label: "Khách thuê", icon: "👥" },
               { id: "bills", label: "Hóa đơn", icon: "💳" },
               { id: "reports", label: "Báo cáo sự cố", icon: "🔧" },
+              { id: "messages", label: "Tin nhắn", icon: "💬" },
               { id: "reviews", label: "Đánh giá", icon: "⭐" },
               { id: "revenue", label: "Doanh thu", icon: "📈" },
             ].map((tab) => (
@@ -342,6 +478,7 @@ export default function OwnerDashboard() {
                     { id: "tenants", label: "Khách thuê" },
                     { id: "bills", label: "Hóa đơn" },
                     { id: "reports", label: "Báo cáo sự cố" },
+                    { id: "messages", label: "Tin nhắn" },
                     { id: "reviews", label: "Đánh giá phòng" },
                     { id: "revenue", label: "Doanh thu" },
                   ].find(tab => tab.id === activeTab)?.label}
@@ -851,6 +988,158 @@ export default function OwnerDashboard() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {/* Messages Tab */}
+        {activeTab === "messages" && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">Tin nhắn với khách thuê</h2>
+              <div className="flex items-center space-x-3">
+                <div className="text-sm text-gray-500">
+                  {mockConversations.reduce((sum, conv) => sum + conv.unreadCount, 0)} tin nhắn chưa đọc
+                </div>
+                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
+                  <span className="mr-2">+</span>
+                  Tin nhắn mới
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
+              {/* Conversations List */}
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                <div className="p-4 border-b border-gray-200">
+                  <h3 className="font-semibold text-gray-900">Cuộc trò chuyện</h3>
+                </div>
+                <div className="overflow-y-auto h-full">
+                  {mockConversations.map((conversation) => (
+                    <div
+                      key={conversation.id}
+                      onClick={() => selectConversation(conversation)}
+                      className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
+                        selectedConversation?.id === conversation.id ? 'bg-blue-50 border-blue-200' : ''
+                      }`}
+                    >
+                      <div className="flex items-start space-x-3">
+                        <div className="relative">
+                          <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                            {conversation.tenant.avatar}
+                          </div>
+                          {conversation.isOnline && (
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-1">
+                            <h4 className="font-medium text-gray-900 truncate">{conversation.tenant.name}</h4>
+                            <span className="text-xs text-gray-500">{conversation.lastMessageTime}</span>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-1">Phòng {conversation.tenant.room}</p>
+                          <p className="text-sm text-gray-500 truncate">{conversation.lastMessage}</p>
+                          {conversation.unreadCount > 0 && (
+                            <div className="mt-2">
+                              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                                {conversation.unreadCount}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Chat Area */}
+              <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-100 flex flex-col">
+                {selectedConversation ? (
+                  <>
+                    {/* Chat Header */}
+                    <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="relative">
+                          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                            {selectedConversation.tenant.avatar}
+                          </div>
+                          {selectedConversation.isOnline && (
+                            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900">{selectedConversation.tenant.name}</h3>
+                          <p className="text-sm text-gray-500">
+                            Phòng {selectedConversation.tenant.room} • {selectedConversation.tenant.phone}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                          📞
+                        </button>
+                        <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                          ℹ️
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Messages */}
+                    <div className="flex-1 p-4 overflow-y-auto space-y-4">
+                      {selectedConversation.messages.map((message: any) => (
+                        <div
+                          key={message.id}
+                          className={`flex ${message.sender === 'owner' ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div
+                            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+                              message.sender === 'owner'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-100 text-gray-900'
+                            }`}
+                          >
+                            <p className="text-sm">{message.content}</p>
+                            <p className={`text-xs mt-1 ${
+                              message.sender === 'owner' ? 'text-blue-100' : 'text-gray-500'
+                            }`}>
+                              {message.timestamp}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Message Input */}
+                    <div className="p-4 border-t border-gray-200">
+                      <form onSubmit={handleSendMessage} className="flex space-x-3">
+                        <input
+                          type="text"
+                          value={newMessage}
+                          onChange={(e) => setNewMessage(e.target.value)}
+                          className="form-input flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+                          placeholder="Nhập tin nhắn..."
+                        />
+                        <button
+                          type="submit"
+                          disabled={!newMessage.trim()}
+                          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                        >
+                          Gửi
+                        </button>
+                      </form>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex-1 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-6xl mb-4">💬</div>
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">Chọn cuộc trò chuyện</h3>
+                      <p className="text-gray-600">Chọn một khách thuê để bắt đầu nhắn tin</p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
