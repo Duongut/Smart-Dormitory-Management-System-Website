@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 // Mock data
 const mockAvailableRooms = [
@@ -54,6 +56,13 @@ const mockContract = {
 
 export default function TenantDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
+  const { logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+  };
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportForm, setReportForm] = useState({
     issue: "",
@@ -159,13 +168,13 @@ export default function TenantDashboard() {
             <p className="text-sm font-medium text-gray-900">Nguyễn Văn A</p>
             <p className="text-xs text-gray-500">tenant@demo.com</p>
           </div>
-          <Link
-            href="/"
+          <button
+            onClick={handleLogout}
             className="w-full flex items-center px-4 py-3 text-left rounded-xl font-medium text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-all duration-200 group"
           >
             <span className="mr-3 text-lg group-hover:scale-110 transition-transform duration-200">🚪</span>
             <span>Đăng xuất</span>
-          </Link>
+          </button>
         </div>
       </aside>
 
@@ -299,7 +308,7 @@ export default function TenantDashboard() {
             {/* Quick Actions */}
             <div className="bg-white p-6 rounded-lg shadow">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Thao tác nhanh</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <Link href="/messages" className="bg-blue-600 text-white p-4 rounded-lg text-center hover:bg-blue-700 transition-colors">
                   <div className="text-2xl mb-2">💬</div>
                   <div className="font-medium text-sm">Tin nhắn</div>
@@ -314,7 +323,11 @@ export default function TenantDashboard() {
                 </Link>
                 <Link href="/rate-room" className="bg-yellow-600 text-white p-4 rounded-lg text-center hover:bg-yellow-700 transition-colors">
                   <div className="text-2xl mb-2">⭐</div>
-                  <div className="font-medium text-sm">Đánh giá</div>
+                  <div className="font-medium text-sm">Viết đánh giá</div>
+                </Link>
+                <Link href="/tenant-dashboard/reviews" className="bg-orange-600 text-white p-4 rounded-lg text-center hover:bg-orange-700 transition-colors">
+                  <div className="text-2xl mb-2">📝</div>
+                  <div className="font-medium text-sm">Đánh giá của tôi</div>
                 </Link>
               </div>
             </div>
@@ -331,15 +344,15 @@ export default function TenantDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Giá từ</label>
-                  <input type="number" className="w-full border border-gray-300 rounded-md px-3 py-2" placeholder="2,000,000" />
+                  <input type="number" className="form-input w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-500" placeholder="2,000,000" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Giá đến</label>
-                  <input type="number" className="w-full border border-gray-300 rounded-md px-3 py-2" placeholder="5,000,000" />
+                  <input type="number" className="form-input w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-500" placeholder="5,000,000" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Diện tích tối thiểu</label>
-                  <input type="number" className="w-full border border-gray-300 rounded-md px-3 py-2" placeholder="25" />
+                  <input type="number" className="form-input w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-500" placeholder="25" />
                 </div>
                 <div className="flex items-end">
                   <button className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700">
@@ -621,7 +634,7 @@ export default function TenantDashboard() {
                       <input
                         type="text"
                         value="Nguyễn Văn A"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50"
+                        className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 text-gray-900"
                         readOnly
                       />
                     </div>
@@ -630,7 +643,7 @@ export default function TenantDashboard() {
                       <input
                         type="email"
                         value="tenant@demo.com"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50"
+                        className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 text-gray-900"
                         readOnly
                       />
                     </div>
@@ -639,7 +652,7 @@ export default function TenantDashboard() {
                       <input
                         type="tel"
                         value="0123456789"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50"
+                        className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 text-gray-900"
                         readOnly
                       />
                     </div>
@@ -717,7 +730,7 @@ export default function TenantDashboard() {
                   <input
                     type="text"
                     value="Nguyễn Văn B (Anh trai)"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 text-gray-900"
                     readOnly
                   />
                 </div>
@@ -726,7 +739,7 @@ export default function TenantDashboard() {
                   <input
                     type="tel"
                     value="0987654321"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 text-gray-900"
                     readOnly
                   />
                 </div>
@@ -786,7 +799,7 @@ export default function TenantDashboard() {
                   <select
                     value={reportForm.issue}
                     onChange={(e) => setReportForm({...reportForm, issue: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900"
                     required
                   >
                     <option value="">Chọn loại sự cố</option>
@@ -809,7 +822,7 @@ export default function TenantDashboard() {
                     type="text"
                     value={reportForm.location}
                     onChange={(e) => setReportForm({...reportForm, location: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 placeholder-gray-500"
                     placeholder="VD: Phòng ngủ, Phòng tắm, Ban công..."
                   />
                 </div>
@@ -821,7 +834,7 @@ export default function TenantDashboard() {
                   <select
                     value={reportForm.priority}
                     onChange={(e) => setReportForm({...reportForm, priority: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900"
                   >
                     <option value="low">Thấp - Không ảnh hưởng nhiều</option>
                     <option value="medium">Trung bình - Cần xử lý sớm</option>
@@ -836,7 +849,7 @@ export default function TenantDashboard() {
                   <textarea
                     value={reportForm.description}
                     onChange={(e) => setReportForm({...reportForm, description: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 placeholder-gray-500"
                     rows={4}
                     placeholder="Mô tả chi tiết về vấn đề, thời gian xảy ra, mức độ ảnh hưởng..."
                     required

@@ -220,6 +220,73 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Input and form styling improvements */
+input, textarea, select {
+  color: #1f2937 !important; /* Dark gray text */
+  background-color: #ffffff !important; /* White background */
+}
+
+input::placeholder, textarea::placeholder {
+  color: #6b7280 !important; /* Medium gray placeholder */
+  opacity: 1 !important;
+}
+
+/* Focus states */
+input:focus, textarea:focus, select:focus {
+  color: #111827 !important; /* Darker text on focus */
+  background-color: #ffffff !important;
+}
+
+/* Specific styling for form inputs */
+.form-input {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+}
+
+.form-input::placeholder {
+  color: #6b7280 !important;
+  opacity: 1 !important;
+}
+
+.form-input:focus {
+  color: #111827 !important;
+  background-color: #ffffff !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Additional styling for better contrast */
+.form-input:disabled {
+  color: #6b7280 !important;
+  background-color: #f9fafb !important;
+}
+
+/* Ensure all form elements have proper contrast */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+input[type="date"],
+textarea,
+select {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+textarea:focus,
+select:focus {
+  color: #111827 !important;
+  background-color: #ffffff !important;
+}
+
 /* Button hover effects */
 .btn-hover-lift {
   transition: all 0.3s ease;

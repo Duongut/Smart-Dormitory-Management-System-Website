@@ -405,7 +405,7 @@ export default function RoomDetailsPage() {
                   onChange={(e) => setReportText(e.target.value)}
                   placeholder="Mô tả chi tiết sự cố bạn gặp phải..."
                   rows={4}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="form-input w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                 />
                 <div className="flex justify-end space-x-3 mt-4">
                   <button

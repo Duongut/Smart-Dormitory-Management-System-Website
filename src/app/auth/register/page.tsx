@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { 
-  EyeIcon, 
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  EyeIcon,
   EyeSlashIcon,
   UserIcon,
   LockClosedIcon,
@@ -27,6 +28,7 @@ interface RegisterForm {
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [formData, setFormData] = useState<RegisterForm>({
     fullName: "",
     email: "",
@@ -115,12 +117,14 @@ export default function RegisterPage() {
     // Simulate API call
     setTimeout(() => {
       // Mock registration success - chỉ cho khách thuê
-      localStorage.setItem("user", JSON.stringify({
+      const userData = {
         email: formData.email,
-        userType: "tenant", // Luôn là tenant
+        userType: "tenant" as "owner" | "tenant", // Luôn là tenant
         name: formData.fullName,
         isAuthenticated: true
-      }));
+      };
+
+      login(userData);
 
       // Redirect to tenant dashboard
       router.push("/tenant-dashboard");
@@ -179,7 +183,7 @@ export default function RegisterPage() {
                   type="text"
                   value={formData.fullName}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                  className={`form-input w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500 ${
                     errors.fullName ? "border-red-300" : "border-gray-300"
                   }`}
                   placeholder="Nhập họ và tên"
@@ -201,7 +205,7 @@ export default function RegisterPage() {
                   type="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                  className={`form-input w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500 ${
                     errors.email ? "border-red-300" : "border-gray-300"
                   }`}
                   placeholder="Nhập email"
@@ -223,7 +227,7 @@ export default function RegisterPage() {
                   type="tel"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                  className={`form-input w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500 ${
                     errors.phone ? "border-red-300" : "border-gray-300"
                   }`}
                   placeholder="0123456789"
@@ -245,7 +249,7 @@ export default function RegisterPage() {
                   type="text"
                   value={formData.idNumber}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                  className={`form-input w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500 ${
                     errors.idNumber ? "border-red-300" : "border-gray-300"
                   }`}
                   placeholder="123456789012"
@@ -267,7 +271,7 @@ export default function RegisterPage() {
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                  className={`form-input w-full pl-10 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500 ${
                     errors.password ? "border-red-300" : "border-gray-300"
                   }`}
                   placeholder="Nhập mật khẩu"
@@ -300,7 +304,7 @@ export default function RegisterPage() {
                   type={showConfirmPassword ? "text" : "password"}
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                  className={`form-input w-full pl-10 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500 ${
                     errors.confirmPassword ? "border-red-300" : "border-gray-300"
                   }`}
                   placeholder="Nhập lại mật khẩu"

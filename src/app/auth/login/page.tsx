@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { 
-  EyeIcon, 
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  EyeIcon,
   EyeSlashIcon,
   UserIcon,
   LockClosedIcon,
@@ -13,6 +14,7 @@ import {
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -40,13 +42,15 @@ export default function LoginPage() {
     setTimeout(() => {
       // Mock authentication
       if (formData.email && formData.password) {
-        // Store user data in localStorage (in real app, use proper auth)
-        localStorage.setItem("user", JSON.stringify({
+        // Use AuthContext login function
+        const userData = {
           email: formData.email,
           userType: formData.userType,
           name: formData.userType === "owner" ? "Chủ trọ ABC" : "Nguyễn Văn A",
           isAuthenticated: true
-        }));
+        };
+
+        login(userData);
 
         // Redirect based on user type
         if (formData.userType === "owner") {
@@ -133,7 +137,7 @@ export default function LoginPage() {
                   type="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="form-input w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500"
                   placeholder="Nhập email của bạn"
                   required
                 />
@@ -153,7 +157,7 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="form-input w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500"
                   placeholder="Nhập mật khẩu"
                   required
                 />

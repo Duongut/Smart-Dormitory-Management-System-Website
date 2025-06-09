@@ -54,7 +54,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     setUser(null);
+    // Clear all authentication data
     localStorage.removeItem('user');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('refreshToken');
+
+    // Clear any session storage
+    sessionStorage.clear();
+
+    // Clear any cookies (if using cookies for auth)
+    document.cookie.split(";").forEach((c) => {
+      const eqPos = c.indexOf("=");
+      const name = eqPos > -1 ? c.substr(0, eqPos) : c;
+      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+    });
+
+    // Force reload to clear any cached state
+    window.location.href = '/';
   };
 
   return (

@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 // Mock data
 const mockRooms = [
@@ -26,18 +28,28 @@ const mockReports = [
 
 export default function OwnerDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
+  const { logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+  };
 
   // Modal states
   const [showRoomModal, setShowRoomModal] = useState(false);
   const [showTenantModal, setShowTenantModal] = useState(false);
   const [showBillModal, setShowBillModal] = useState(false);
   const [showReportDetailModal, setShowReportDetailModal] = useState(false);
+  const [showReviewResponseModal, setShowReviewResponseModal] = useState(false);
 
   // Form states
   const [editingRoom, setEditingRoom] = useState<any>(null);
   const [editingTenant, setEditingTenant] = useState<any>(null);
   const [editingBill, setEditingBill] = useState<any>(null);
   const [selectedReport, setSelectedReport] = useState<any>(null);
+  const [selectedReview, setSelectedReview] = useState<any>(null);
+  const [responseText, setResponseText] = useState("");
 
   // Form data
   const [roomForm, setRoomForm] = useState({
@@ -233,6 +245,21 @@ export default function OwnerDashboard() {
     setShowReportDetailModal(false);
   };
 
+  const openReviewResponseModal = (review: any) => {
+    setSelectedReview(review);
+    setResponseText(review.response || "");
+    setShowReviewResponseModal(true);
+  };
+
+  const handleReviewResponse = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Responding to review:", selectedReview.id, responseText);
+    alert("Phản hồi đánh giá thành công!");
+    setShowReviewResponseModal(false);
+    setResponseText("");
+    setSelectedReview(null);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
@@ -291,13 +318,13 @@ export default function OwnerDashboard() {
             <p className="text-sm font-medium text-gray-900">Chủ trọ ABC</p>
             <p className="text-xs text-gray-500">owner@demo.com</p>
           </div>
-          <Link
-            href="/"
+          <button
+            onClick={handleLogout}
             className="w-full flex items-center px-4 py-3 text-left rounded-xl font-medium text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-all duration-200 group"
           >
             <span className="mr-3 text-lg group-hover:scale-110 transition-transform duration-200">🚪</span>
             <span>Đăng xuất</span>
-          </Link>
+          </button>
         </div>
       </aside>
 
@@ -474,8 +501,18 @@ export default function OwnerDashboard() {
                         {room.area}m²
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button className="text-blue-600 hover:text-blue-900 mr-3">Sửa</button>
-                        <button className="text-red-600 hover:text-red-900">Xóa</button>
+                        <button
+                          onClick={() => openRoomModal(room)}
+                          className="text-blue-600 hover:text-blue-900 mr-3 px-3 py-1 rounded-lg hover:bg-blue-50 transition-colors"
+                        >
+                          Sửa
+                        </button>
+                        <button
+                          onClick={() => handleDeleteRoom(room.id.toString())}
+                          className="text-red-600 hover:text-red-900 px-3 py-1 rounded-lg hover:bg-red-50 transition-colors"
+                        >
+                          Xóa
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -910,7 +947,9 @@ export default function OwnerDashboard() {
                     value: 5,
                     landlord: 5
                   },
-                  anonymous: false
+                  anonymous: false,
+                  response: "Cảm ơn bạn rất nhiều vì đánh giá tích cực! Chúng tôi luôn cố gắng tạo môi trường sống tốt nhất cho các bạn sinh viên. Chúc bạn học tập tốt!",
+                  responseDate: "2024-03-02"
                 },
                 {
                   id: 2,
@@ -992,12 +1031,33 @@ export default function OwnerDashboard() {
                     ))}
                   </div>
 
+                  {/* Owner Response */}
+                  {review.response && (
+                    <div className="mt-4 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                      <div className="flex items-start">
+                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mr-3 text-sm">
+                          CT
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center mb-2">
+                            <span className="font-medium text-blue-900">Phản hồi từ chủ trọ</span>
+                            <span className="ml-2 text-sm text-blue-600">{review.responseDate}</span>
+                          </div>
+                          <p className="text-blue-800">{review.response}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="flex justify-between items-center pt-4 border-t border-gray-200">
                     <div className="flex space-x-3">
-                      <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                        Phản hồi
+                      <button
+                        onClick={() => openReviewResponseModal(review)}
+                        className="text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1 rounded-lg hover:bg-blue-50 transition-colors"
+                      >
+                        {review.response ? 'Chỉnh sửa phản hồi' : 'Phản hồi'}
                       </button>
-                      <button className="text-green-600 hover:text-green-800 text-sm font-medium">
+                      <button className="text-green-600 hover:text-green-800 text-sm font-medium px-3 py-1 rounded-lg hover:bg-green-50 transition-colors">
                         Cảm ơn
                       </button>
                     </div>
@@ -1181,7 +1241,7 @@ export default function OwnerDashboard() {
                     type="text"
                     value={roomForm.number}
                     onChange={(e) => setRoomForm({...roomForm, number: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                     placeholder="VD: 101, 102..."
                     required
                   />
@@ -1194,7 +1254,7 @@ export default function OwnerDashboard() {
                     type="number"
                     value={roomForm.price}
                     onChange={(e) => setRoomForm({...roomForm, price: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                     placeholder="VD: 3000000"
                     required
                   />
@@ -1207,7 +1267,7 @@ export default function OwnerDashboard() {
                     type="number"
                     value={roomForm.area}
                     onChange={(e) => setRoomForm({...roomForm, area: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                     placeholder="VD: 25"
                     required
                   />
@@ -1219,7 +1279,7 @@ export default function OwnerDashboard() {
                   <select
                     value={roomForm.status}
                     onChange={(e) => setRoomForm({...roomForm, status: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   >
                     <option value="available">Trống</option>
                     <option value="occupied">Đã thuê</option>
@@ -1233,7 +1293,7 @@ export default function OwnerDashboard() {
                   <textarea
                     value={roomForm.description}
                     onChange={(e) => setRoomForm({...roomForm, description: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                     rows={3}
                     placeholder="Mô tả về phòng, vị trí, đặc điểm..."
                   />
@@ -1306,7 +1366,7 @@ export default function OwnerDashboard() {
                     type="text"
                     value={tenantForm.name}
                     onChange={(e) => setTenantForm({...tenantForm, name: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                     placeholder="VD: Nguyễn Văn A"
                     required
                   />
@@ -1319,7 +1379,7 @@ export default function OwnerDashboard() {
                     type="email"
                     value={tenantForm.email}
                     onChange={(e) => setTenantForm({...tenantForm, email: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                     placeholder="VD: tenant@email.com"
                   />
                 </div>
@@ -1331,7 +1391,7 @@ export default function OwnerDashboard() {
                     type="tel"
                     value={tenantForm.phone}
                     onChange={(e) => setTenantForm({...tenantForm, phone: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                     placeholder="VD: 0123456789"
                     required
                   />
@@ -1344,7 +1404,7 @@ export default function OwnerDashboard() {
                     type="text"
                     value={tenantForm.idCard}
                     onChange={(e) => setTenantForm({...tenantForm, idCard: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                     placeholder="VD: 123456789012"
                   />
                 </div>
@@ -1355,7 +1415,7 @@ export default function OwnerDashboard() {
                   <select
                     value={tenantForm.room}
                     onChange={(e) => setTenantForm({...tenantForm, room: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                     required
                   >
                     <option value="">Chọn phòng</option>
@@ -1374,7 +1434,7 @@ export default function OwnerDashboard() {
                     type="date"
                     value={tenantForm.startDate}
                     onChange={(e) => setTenantForm({...tenantForm, startDate: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                     required
                   />
                 </div>
@@ -1386,7 +1446,7 @@ export default function OwnerDashboard() {
                     type="number"
                     value={tenantForm.deposit}
                     onChange={(e) => setTenantForm({...tenantForm, deposit: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                     placeholder="VD: 3000000"
                   />
                 </div>
@@ -1398,7 +1458,7 @@ export default function OwnerDashboard() {
                     type="text"
                     value={tenantForm.emergencyContact}
                     onChange={(e) => setTenantForm({...tenantForm, emergencyContact: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                     placeholder="VD: Nguyễn Văn B (Anh trai)"
                   />
                 </div>
@@ -1410,7 +1470,7 @@ export default function OwnerDashboard() {
                     type="tel"
                     value={tenantForm.emergencyPhone}
                     onChange={(e) => setTenantForm({...tenantForm, emergencyPhone: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                     placeholder="VD: 0987654321"
                   />
                 </div>
@@ -1457,7 +1517,7 @@ export default function OwnerDashboard() {
                   <select
                     value={billForm.room}
                     onChange={(e) => setBillForm({...billForm, room: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                     required
                   >
                     <option value="">Chọn phòng</option>
@@ -1475,7 +1535,7 @@ export default function OwnerDashboard() {
                   <select
                     value={billForm.tenant}
                     onChange={(e) => setBillForm({...billForm, tenant: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                     required
                   >
                     <option value="">Chọn khách thuê</option>
@@ -1491,7 +1551,7 @@ export default function OwnerDashboard() {
                   <select
                     value={billForm.type}
                     onChange={(e) => setBillForm({...billForm, type: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                     required
                   >
                     <option value="monthly">Tiền phòng hàng tháng</option>
@@ -1509,7 +1569,7 @@ export default function OwnerDashboard() {
                     type="date"
                     value={billForm.dueDate}
                     onChange={(e) => setBillForm({...billForm, dueDate: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                     required
                   />
                 </div>
@@ -1521,7 +1581,7 @@ export default function OwnerDashboard() {
                     type="number"
                     value={billForm.electricUsage}
                     onChange={(e) => setBillForm({...billForm, electricUsage: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                     placeholder="VD: 150"
                   />
                 </div>
@@ -1533,7 +1593,7 @@ export default function OwnerDashboard() {
                     type="number"
                     value={billForm.waterUsage}
                     onChange={(e) => setBillForm({...billForm, waterUsage: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                     placeholder="VD: 15"
                   />
                 </div>
@@ -1545,7 +1605,7 @@ export default function OwnerDashboard() {
                     type="number"
                     value={billForm.amount}
                     onChange={(e) => setBillForm({...billForm, amount: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                     placeholder="VD: 3500000"
                     required
                   />
@@ -1557,7 +1617,7 @@ export default function OwnerDashboard() {
                   <textarea
                     value={billForm.description}
                     onChange={(e) => setBillForm({...billForm, description: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                     rows={3}
                     placeholder="Ghi chú thêm về hóa đơn..."
                   />
@@ -1703,6 +1763,74 @@ export default function OwnerDashboard() {
                   Thông báo khách thuê
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Review Response Modal */}
+      {showReviewResponseModal && selectedReview && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900">
+                Phản hồi đánh giá
+              </h3>
+              <p className="text-gray-600 mt-1">
+                Phản hồi đánh giá từ {selectedReview.tenant} - Phòng {selectedReview.room}
+              </p>
+            </div>
+
+            <div className="p-6">
+              {/* Original Review */}
+              <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center mb-2">
+                  <div className="flex">
+                    {[1,2,3,4,5].map(star => (
+                      <span key={star} className={`text-lg ${star <= selectedReview.rating ? 'text-yellow-400' : 'text-gray-300'}`}>⭐</span>
+                    ))}
+                  </div>
+                  <span className="ml-2 font-bold text-gray-900">{selectedReview.rating}/5</span>
+                  <span className="ml-2 text-sm text-gray-500">{selectedReview.date}</span>
+                </div>
+                <p className="text-gray-700">{selectedReview.review}</p>
+              </div>
+
+              {/* Response Form */}
+              <form onSubmit={handleReviewResponse}>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Phản hồi của bạn
+                  </label>
+                  <textarea
+                    value={responseText}
+                    onChange={(e) => setResponseText(e.target.value)}
+                    className="form-input w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+                    rows={4}
+                    placeholder="Cảm ơn bạn đã đánh giá! Hãy chia sẻ phản hồi của bạn..."
+                    required
+                  />
+                  <p className="text-sm text-gray-500 mt-1">
+                    Phản hồi này sẽ hiển thị công khai dưới đánh giá của khách thuê
+                  </p>
+                </div>
+
+                <div className="flex space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowReviewResponseModal(false)}
+                    className="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    {selectedReview.response ? 'Cập nhật phản hồi' : 'Gửi phản hồi'}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>

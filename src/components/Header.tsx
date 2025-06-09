@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { BuildingOfficeIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 interface HeaderProps {
   userType?: "owner" | "tenant";
@@ -7,6 +11,14 @@ interface HeaderProps {
 }
 
 export default function Header({ userType, userName }: HeaderProps) {
+  const { logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+  };
+
   const getHeaderColor = () => {
     switch (userType) {
       case "owner": return "bg-blue-600";
@@ -68,9 +80,12 @@ export default function Header({ userType, userName }: HeaderProps) {
               {userName && (
                 <span className="text-gray-700">Xin chào, {userName}</span>
               )}
-              <Link href="/" className={`${userType === "owner" ? "text-blue-600 hover:text-blue-800" : "text-green-600 hover:text-green-800"} transition-colors`}>
+              <button
+                onClick={handleLogout}
+                className={`${userType === "owner" ? "text-blue-600 hover:text-blue-800" : "text-green-600 hover:text-green-800"} transition-colors cursor-pointer`}
+              >
                 Đăng xuất
-              </Link>
+              </button>
             </div>
           )}
         </div>
