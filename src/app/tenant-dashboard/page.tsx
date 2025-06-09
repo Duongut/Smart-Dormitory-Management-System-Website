@@ -6,10 +6,108 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 
 // Mock data
-const mockAvailableRooms = [
-  { id: 1, number: "102", price: 3200000, area: 28, amenities: ["Máy lạnh", "Tủ lạnh", "WiFi"], images: ["room1.jpg"] },
-  { id: 2, number: "202", price: 3500000, area: 30, amenities: ["Máy lạnh", "Tủ lạnh", "WiFi", "Ban công"], images: ["room2.jpg"] },
-  { id: 3, number: "301", price: 4000000, area: 35, amenities: ["Máy lạnh", "Tủ lạnh", "WiFi", "Ban công", "Bếp riêng"], images: ["room3.jpg"] },
+const mockAllRooms = [
+  {
+    id: 1,
+    number: "101",
+    price: 3500000,
+    area: 30,
+    amenities: ["Máy lạnh", "Tủ lạnh", "WiFi", "Ban công"],
+    images: ["room1.jpg"],
+    status: "occupied", // occupied, available, maintenance
+    tenant: "Nguyễn Văn A",
+    moveInDate: "2024-01-01"
+  },
+  {
+    id: 2,
+    number: "102",
+    price: 3200000,
+    area: 28,
+    amenities: ["Máy lạnh", "Tủ lạnh", "WiFi"],
+    images: ["room2.jpg"],
+    status: "available",
+    tenant: null,
+    moveInDate: null
+  },
+  {
+    id: 3,
+    number: "103",
+    price: 3800000,
+    area: 32,
+    amenities: ["Máy lạnh", "Tủ lạnh", "WiFi", "Bếp riêng"],
+    images: ["room3.jpg"],
+    status: "maintenance",
+    tenant: null,
+    moveInDate: null,
+    maintenanceReason: "Sửa chữa hệ thống điện"
+  },
+  {
+    id: 4,
+    number: "201",
+    price: 3600000,
+    area: 30,
+    amenities: ["Máy lạnh", "Tủ lạnh", "WiFi", "Ban công"],
+    images: ["room4.jpg"],
+    status: "occupied",
+    tenant: "Trần Thị B",
+    moveInDate: "2023-12-15"
+  },
+  {
+    id: 5,
+    number: "202",
+    price: 3500000,
+    area: 30,
+    amenities: ["Máy lạnh", "Tủ lạnh", "WiFi", "Ban công"],
+    images: ["room5.jpg"],
+    status: "available",
+    tenant: null,
+    moveInDate: null
+  },
+  {
+    id: 6,
+    number: "203",
+    price: 3700000,
+    area: 31,
+    amenities: ["Máy lạnh", "Tủ lạnh", "WiFi", "Ban công", "Máy giặt"],
+    images: ["room6.jpg"],
+    status: "available",
+    tenant: null,
+    moveInDate: null
+  },
+  {
+    id: 7,
+    number: "301",
+    price: 4000000,
+    area: 35,
+    amenities: ["Máy lạnh", "Tủ lạnh", "WiFi", "Ban công", "Bếp riêng"],
+    images: ["room7.jpg"],
+    status: "available",
+    tenant: null,
+    moveInDate: null
+  },
+  {
+    id: 8,
+    number: "302",
+    price: 4200000,
+    area: 36,
+    amenities: ["Máy lạnh", "Tủ lạnh", "WiFi", "Ban công", "Bếp riêng", "Máy giặt"],
+    images: ["room8.jpg"],
+    status: "occupied",
+    tenant: "Lê Văn C",
+    moveInDate: "2024-02-01"
+  },
+  {
+    id: 9,
+    number: "303",
+    price: 3900000,
+    area: 34,
+    amenities: ["Máy lạnh", "Tủ lạnh", "WiFi", "Ban công"],
+    images: ["room9.jpg"],
+    status: "maintenance",
+    tenant: null,
+    moveInDate: null,
+    maintenanceReason: "Thay thế máy lạnh"
+  }
 ];
 
 const mockMyBills = [
@@ -72,6 +170,15 @@ export default function TenantDashboard() {
   });
   const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
 
+  // Room search filters
+  const [roomFilters, setRoomFilters] = useState({
+    status: "all", // all, available, occupied, maintenance
+    minPrice: "",
+    maxPrice: "",
+    minArea: "",
+    searchTerm: ""
+  });
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "paid": return "bg-green-100 text-green-800";
@@ -92,8 +199,40 @@ export default function TenantDashboard() {
       case "in-progress": return "Đang xử lý";
       case "completed": return "Hoàn thành";
       case "active": return "Đang hiệu lực";
+      case "available": return "Phòng trống";
+      case "occupied": return "Đã thuê";
+      case "maintenance": return "Bảo trì";
       default: return status;
     }
+  };
+
+  const getRoomStatusColor = (status: string) => {
+    switch (status) {
+      case "available": return "bg-green-100 text-green-800";
+      case "occupied": return "bg-blue-100 text-blue-800";
+      case "maintenance": return "bg-yellow-100 text-yellow-800";
+      default: return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  // Filter rooms based on criteria
+  const filteredRooms = mockAllRooms.filter(room => {
+    const matchesStatus = roomFilters.status === "all" || room.status === roomFilters.status;
+    const matchesMinPrice = !roomFilters.minPrice || room.price >= parseInt(roomFilters.minPrice);
+    const matchesMaxPrice = !roomFilters.maxPrice || room.price <= parseInt(roomFilters.maxPrice);
+    const matchesMinArea = !roomFilters.minArea || room.area >= parseInt(roomFilters.minArea);
+    const matchesSearch = !roomFilters.searchTerm ||
+      room.number.toLowerCase().includes(roomFilters.searchTerm.toLowerCase()) ||
+      room.amenities.some(amenity => amenity.toLowerCase().includes(roomFilters.searchTerm.toLowerCase()));
+
+    return matchesStatus && matchesMinPrice && matchesMaxPrice && matchesMinArea && matchesSearch;
+  });
+
+  const handleFilterChange = (field: string, value: string) => {
+    setRoomFilters(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   const handleSubmitReport = (e: React.FormEvent) => {
@@ -337,42 +476,160 @@ export default function TenantDashboard() {
         {/* Search Rooms Tab */}
         {activeTab === "search" && (
           <div className="space-y-6">
+            {/* Search Header & Stats */}
             <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Tìm kiếm phòng trọ</h2>
-              
-              {/* Search Filters */}
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">Danh sách phòng trọ</h2>
+                <div className="text-sm text-gray-600">
+                  Hiển thị {filteredRooms.length} / {mockAllRooms.length} phòng
+                </div>
+              </div>
+
+              {/* Room Status Stats */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div className="bg-green-50 p-4 rounded-lg text-center">
+                  <div className="text-2xl font-bold text-green-600">
+                    {mockAllRooms.filter(r => r.status === "available").length}
+                  </div>
+                  <div className="text-sm text-green-700">Phòng trống</div>
+                </div>
+                <div className="bg-blue-50 p-4 rounded-lg text-center">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {mockAllRooms.filter(r => r.status === "occupied").length}
+                  </div>
+                  <div className="text-sm text-blue-700">Đã thuê</div>
+                </div>
+                <div className="bg-yellow-50 p-4 rounded-lg text-center">
+                  <div className="text-2xl font-bold text-yellow-600">
+                    {mockAllRooms.filter(r => r.status === "maintenance").length}
+                  </div>
+                  <div className="text-sm text-yellow-700">Bảo trì</div>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg text-center">
+                  <div className="text-2xl font-bold text-gray-600">
+                    {mockAllRooms.length}
+                  </div>
+                  <div className="text-sm text-gray-700">Tổng phòng</div>
+                </div>
+              </div>
+
+              {/* Search Filters */}
+              <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Trạng thái</label>
+                  <select
+                    value={roomFilters.status}
+                    onChange={(e) => handleFilterChange("status", e.target.value)}
+                    className="form-input w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900"
+                  >
+                    <option value="all">Tất cả</option>
+                    <option value="available">Phòng trống</option>
+                    <option value="occupied">Đã thuê</option>
+                    <option value="maintenance">Bảo trì</option>
+                  </select>
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Giá từ</label>
-                  <input type="number" className="form-input w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-500" placeholder="2,000,000" />
+                  <input
+                    type="number"
+                    value={roomFilters.minPrice}
+                    onChange={(e) => handleFilterChange("minPrice", e.target.value)}
+                    className="form-input w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-500"
+                    placeholder="2,000,000"
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Giá đến</label>
-                  <input type="number" className="form-input w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-500" placeholder="5,000,000" />
+                  <input
+                    type="number"
+                    value={roomFilters.maxPrice}
+                    onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
+                    className="form-input w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-500"
+                    placeholder="5,000,000"
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Diện tích tối thiểu</label>
-                  <input type="number" className="form-input w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-500" placeholder="25" />
+                  <input
+                    type="number"
+                    value={roomFilters.minArea}
+                    onChange={(e) => handleFilterChange("minArea", e.target.value)}
+                    className="form-input w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-500"
+                    placeholder="25"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Tìm kiếm</label>
+                  <input
+                    type="text"
+                    value={roomFilters.searchTerm}
+                    onChange={(e) => handleFilterChange("searchTerm", e.target.value)}
+                    className="form-input w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-500"
+                    placeholder="Số phòng, tiện nghi..."
+                  />
                 </div>
                 <div className="flex items-end">
-                  <button className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700">
-                    Tìm kiếm
+                  <button
+                    onClick={() => setRoomFilters({
+                      status: "all",
+                      minPrice: "",
+                      maxPrice: "",
+                      minArea: "",
+                      searchTerm: ""
+                    })}
+                    className="w-full bg-gray-600 text-white py-2 rounded-md hover:bg-gray-700"
+                  >
+                    Xóa bộ lọc
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* Available Rooms */}
+            {/* All Rooms */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {mockAvailableRooms.map((room) => (
-                <div key={room.id} className="bg-white rounded-lg shadow overflow-hidden">
-                  <div className="h-48 bg-gray-200 flex items-center justify-center">
+              {filteredRooms.map((room) => (
+                <div key={room.id} className="bg-white rounded-lg shadow overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow">
+                  <div className="h-48 bg-gray-200 flex items-center justify-center relative">
                     <span className="text-gray-500">Hình ảnh phòng {room.number}</span>
+                    {/* Status Badge */}
+                    <div className="absolute top-3 right-3">
+                      <span className={`px-3 py-1 text-xs font-medium rounded-full ${getRoomStatusColor(room.status)}`}>
+                        {getStatusText(room.status)}
+                      </span>
+                    </div>
                   </div>
                   <div className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Phòng {room.number}</h3>
-                    <p className="text-2xl font-bold text-green-600 mb-2">{room.price.toLocaleString()}đ/tháng</p>
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="text-lg font-semibold text-gray-900">Phòng {room.number}</h3>
+                      <div className="text-right">
+                        <p className="text-2xl font-bold text-green-600">{room.price.toLocaleString()}đ</p>
+                        <p className="text-sm text-gray-500">/tháng</p>
+                      </div>
+                    </div>
+
                     <p className="text-gray-600 mb-3">Diện tích: {room.area}m²</p>
+
+                    {/* Tenant Info for Occupied Rooms */}
+                    {room.status === "occupied" && room.tenant && (
+                      <div className="mb-3 p-2 bg-blue-50 rounded-lg">
+                        <p className="text-sm text-blue-800">
+                          <span className="font-medium">Khách thuê:</span> {room.tenant}
+                        </p>
+                        <p className="text-xs text-blue-600">
+                          Từ: {room.moveInDate}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Maintenance Info */}
+                    {room.status === "maintenance" && room.maintenanceReason && (
+                      <div className="mb-3 p-2 bg-yellow-50 rounded-lg">
+                        <p className="text-sm text-yellow-800">
+                          <span className="font-medium">Lý do bảo trì:</span> {room.maintenanceReason}
+                        </p>
+                      </div>
+                    )}
+
                     <div className="mb-4">
                       <p className="text-sm font-medium text-gray-700 mb-1">Tiện nghi:</p>
                       <div className="flex flex-wrap gap-1">
@@ -383,18 +640,62 @@ export default function TenantDashboard() {
                         ))}
                       </div>
                     </div>
+
                     <div className="flex space-x-2">
-                      <Link href="/book-room" className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700 text-center">
-                        Đặt phòng
-                      </Link>
-                      <Link href={`/room-details/${room.number}`} className="flex-1 border border-green-600 text-green-600 py-2 rounded hover:bg-green-50 text-center">
-                        Xem chi tiết
-                      </Link>
+                      {room.status === "available" ? (
+                        <>
+                          <Link href="/book-room" className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700 text-center font-medium">
+                            Đặt phòng
+                          </Link>
+                          <Link href={`/room-details/${room.number}`} className="flex-1 border border-green-600 text-green-600 py-2 rounded hover:bg-green-50 text-center font-medium">
+                            Xem chi tiết
+                          </Link>
+                        </>
+                      ) : room.status === "occupied" ? (
+                        <>
+                          <Link href={`/room-details/${room.number}`} className="flex-1 border border-blue-600 text-blue-600 py-2 rounded hover:bg-blue-50 text-center font-medium">
+                            Xem chi tiết
+                          </Link>
+                          <button disabled className="flex-1 bg-gray-300 text-gray-500 py-2 rounded cursor-not-allowed font-medium">
+                            Đã thuê
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <Link href={`/room-details/${room.number}`} className="flex-1 border border-yellow-600 text-yellow-600 py-2 rounded hover:bg-yellow-50 text-center font-medium">
+                            Xem chi tiết
+                          </Link>
+                          <button disabled className="flex-1 bg-gray-300 text-gray-500 py-2 rounded cursor-not-allowed font-medium">
+                            Bảo trì
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
               ))}
             </div>
+
+            {/* Empty State */}
+            {filteredRooms.length === 0 && (
+              <div className="text-center py-12">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Không tìm thấy phòng nào</h3>
+                <p className="text-gray-600 mb-4">Thử điều chỉnh bộ lọc để tìm phòng phù hợp</p>
+                <button
+                  onClick={() => setRoomFilters({
+                    status: "all",
+                    minPrice: "",
+                    maxPrice: "",
+                    minArea: "",
+                    searchTerm: ""
+                  })}
+                  className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
+                >
+                  Xóa tất cả bộ lọc
+                </button>
+              </div>
+            )}
           </div>
         )}
 
