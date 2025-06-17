@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import {
   EyeIcon,
   EyeSlashIcon,
@@ -12,7 +12,8 @@ import {
   BuildingOfficeIcon,
   EnvelopeIcon,
   PhoneIcon,
-  IdentificationIcon
+  IdentificationIcon,
+  HomeIcon,
 } from "@heroicons/react/24/outline";
 
 interface RegisterForm {
@@ -20,8 +21,10 @@ interface RegisterForm {
   email: string;
   phone: string;
   idNumber: string;
+  gender: "male" | "female" | "other"; // <-- thêm dòng này
   password: string;
   confirmPassword: string;
+  address: string;
   userType: "owner" | "tenant";
   agreeTerms: boolean;
 }
@@ -35,9 +38,11 @@ export default function RegisterPage() {
     phone: "",
     idNumber: "",
     password: "",
+    gender: "male",
     confirmPassword: "",
+    address: "",
     userType: "tenant", // Chỉ cho phép khách thuê đăng ký
-    agreeTerms: false
+    agreeTerms: false,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -46,16 +51,16 @@ export default function RegisterPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
-    
+
     // Clear error when user starts typing
     if (errors[name as keyof RegisterForm]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ""
+        [name]: "",
       }));
     }
   };
@@ -71,6 +76,10 @@ export default function RegisterPage() {
       newErrors.email = "Vui lòng nhập email";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Email không hợp lệ";
+    }
+
+    if (!formData.address.trim()) {
+      newErrors.address = "Vui lòng nhập Address";
     }
 
     if (!formData.phone.trim()) {
@@ -98,7 +107,7 @@ export default function RegisterPage() {
     }
 
     if (!formData.agreeTerms) {
-      newErrors.agreeTerms = "Vui lòng đồng ý với điều khoản sử dụng";
+      newErrors.agreeTerms = false;
     }
 
     setErrors(newErrors);
@@ -107,7 +116,7 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -121,7 +130,7 @@ export default function RegisterPage() {
         email: formData.email,
         userType: "tenant" as "owner" | "tenant", // Luôn là tenant
         name: formData.fullName,
-        isAuthenticated: true
+        isAuthenticated: true,
       };
 
       login(userData);
@@ -136,7 +145,7 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-      
+
       <div className="max-w-lg w-full space-y-8 relative">
         {/* Logo and Header */}
         <div className="text-center">
@@ -159,12 +168,15 @@ export default function RegisterPage() {
               <div className="flex items-start">
                 <div className="text-2xl mr-3">🧑‍💼</div>
                 <div>
-                  <h4 className="text-green-900 font-semibold mb-1">Đăng ký dành cho khách thuê</h4>
+                  <h4 className="text-green-900 font-semibold mb-1">
+                    Đăng ký dành cho khách thuê
+                  </h4>
                   <p className="text-green-700 text-sm mb-2">
                     Trang này dành cho khách thuê muốn tìm và thuê phòng trọ.
                   </p>
                   <p className="text-green-600 text-xs">
-                    <strong>Chủ trọ:</strong> Vui lòng liên hệ hotline <strong>1900 1234</strong> để được cấp tài khoản quản lý.
+                    <strong>Chủ trọ:</strong> Vui lòng liên hệ hotline{" "}
+                    <strong>1900 1234</strong> để được cấp tài khoản quản lý.
                   </p>
                 </div>
               </div>
@@ -172,7 +184,10 @@ export default function RegisterPage() {
 
             {/* Full Name */}
             <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="fullName"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Họ và tên *
               </label>
               <div className="relative">
@@ -189,12 +204,17 @@ export default function RegisterPage() {
                   placeholder="Nhập họ và tên"
                 />
               </div>
-              {errors.fullName && <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>}
+              {errors.fullName && (
+                <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
+              )}
             </div>
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Email *
               </label>
               <div className="relative">
@@ -211,12 +231,44 @@ export default function RegisterPage() {
                   placeholder="Nhập email"
                 />
               </div>
-              {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+              )}
+            </div>
+
+            {/* Address */}
+            <div>
+              <label
+                htmlFor="address"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Địa chỉ *
+              </label>
+              <div className="relative">
+                <HomeIcon className="h-5 w-5 text-gray-400 absolute left-3 top-3.5" />
+                <input
+                  id="address"
+                  name="address"
+                  type="text"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  className={`form-input w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500 ${
+                    errors.address ? "border-red-300" : "border-gray-300"
+                  }`}
+                  placeholder="Nhập địa chỉ"
+                />
+              </div>
+              {errors.fullName && (
+                <p className="mt-1 text-sm text-red-600">{errors.address}</p>
+              )}
             </div>
 
             {/* Phone */}
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="phone"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Số điện thoại *
               </label>
               <div className="relative">
@@ -233,12 +285,17 @@ export default function RegisterPage() {
                   placeholder="0123456789"
                 />
               </div>
-              {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
+              {errors.phone && (
+                <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
+              )}
             </div>
 
             {/* ID Number */}
             <div>
-              <label htmlFor="idNumber" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="idNumber"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Số CMND/CCCD *
               </label>
               <div className="relative">
@@ -255,12 +312,62 @@ export default function RegisterPage() {
                   placeholder="123456789012"
                 />
               </div>
-              {errors.idNumber && <p className="mt-1 text-sm text-red-600">{errors.idNumber}</p>}
+              {errors.idNumber && (
+                <p className="mt-1 text-sm text-red-600">{errors.idNumber}</p>
+              )}
+            </div>
+
+            {/* Gender */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Giới tính *
+              </label>
+              <div className="flex gap-4">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="male"
+                    checked={formData.gender === "male"}
+                    onChange={handleInputChange}
+                    className="text-blue-600 focus:ring-blue-500 border-gray-300"
+                  />
+                  <span className="ml-2 text-gray-700 text-sm">Nam</span>
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="female"
+                    checked={formData.gender === "female"}
+                    onChange={handleInputChange}
+                    className="text-blue-600 focus:ring-blue-500 border-gray-300"
+                  />
+                  <span className="ml-2 text-gray-700 text-sm">Nữ</span>
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="other"
+                    checked={formData.gender === "other"}
+                    onChange={handleInputChange}
+                    className="text-blue-600 focus:ring-blue-500 border-gray-300"
+                  />
+                  <span className="ml-2 text-gray-700 text-sm">Khác</span>
+                </label>
+              </div>
+              {errors.gender && (
+                <p className="mt-1 text-sm text-red-600">{errors.gender}</p>
+              )}
             </div>
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Mật khẩu *
               </label>
               <div className="relative">
@@ -288,12 +395,17 @@ export default function RegisterPage() {
                   )}
                 </button>
               </div>
-              {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+              )}
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Xác nhận mật khẩu *
               </label>
               <div className="relative">
@@ -305,7 +417,9 @@ export default function RegisterPage() {
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
                   className={`form-input w-full pl-10 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500 ${
-                    errors.confirmPassword ? "border-red-300" : "border-gray-300"
+                    errors.confirmPassword
+                      ? "border-red-300"
+                      : "border-gray-300"
                   }`}
                   placeholder="Nhập lại mật khẩu"
                 />
@@ -321,7 +435,11 @@ export default function RegisterPage() {
                   )}
                 </button>
               </div>
-              {errors.confirmPassword && <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>}
+              {errors.confirmPassword && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.confirmPassword}
+                </p>
+              )}
             </div>
 
             {/* Terms Agreement */}
@@ -336,16 +454,24 @@ export default function RegisterPage() {
                 />
                 <span className="ml-2 text-sm text-gray-600">
                   Tôi đồng ý với{" "}
-                  <Link href="/terms" className="text-blue-600 hover:text-blue-800">
+                  <Link
+                    href="/terms"
+                    className="text-blue-600 hover:text-blue-800"
+                  >
                     Điều khoản sử dụng
                   </Link>{" "}
                   và{" "}
-                  <Link href="/privacy" className="text-blue-600 hover:text-blue-800">
+                  <Link
+                    href="/privacy"
+                    className="text-blue-600 hover:text-blue-800"
+                  >
                     Chính sách bảo mật
                   </Link>
                 </span>
               </label>
-              {errors.agreeTerms && <p className="mt-1 text-sm text-red-600">{errors.agreeTerms}</p>}
+              {errors.agreeTerms && (
+                <p className="mt-1 text-sm text-red-600">{errors.agreeTerms}</p>
+              )}
             </div>
 
             {/* Submit Button */}
@@ -372,7 +498,10 @@ export default function RegisterPage() {
             <div className="text-center">
               <div className="text-sm text-gray-600">
                 Đã có tài khoản?{" "}
-                <Link href="/auth/login" className="text-blue-600 hover:text-blue-800 font-medium">
+                <Link
+                  href="/auth/login"
+                  className="text-blue-600 hover:text-blue-800 font-medium"
+                >
                   Đăng nhập ngay
                 </Link>
               </div>
@@ -390,7 +519,11 @@ export default function RegisterPage() {
 
       <style jsx>{`
         .bg-grid-pattern {
-          background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px);
+          background-image: radial-gradient(
+            circle,
+            #e5e7eb 1px,
+            transparent 1px
+          );
           background-size: 20px 20px;
         }
       `}</style>
