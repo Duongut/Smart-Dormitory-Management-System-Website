@@ -10,7 +10,7 @@ import {
   UserGroupIcon,
   ChartBarIcon,
   UserIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
 } from "@heroicons/react/24/outline";
 
 // Feature Card Component
@@ -21,11 +21,20 @@ interface FeatureCardProps {
   gradient?: string;
 }
 
-function FeatureCard({ icon, title, description, gradient = "from-blue-500 to-blue-600" }: FeatureCardProps) {
+function FeatureCard({
+  icon,
+  title,
+  description,
+  gradient = "from-blue-500 to-blue-600",
+}: FeatureCardProps) {
   return (
     <div className="group relative bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-gray-200">
-      <div className={`absolute inset-0 bg-gradient-to-r ${gradient} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity duration-300`}></div>
-      <div className={`inline-flex p-3 rounded-xl bg-gradient-to-r ${gradient} text-white mb-6 shadow-lg`}>
+      <div
+        className={`absolute inset-0 bg-gradient-to-r ${gradient} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity duration-300`}
+      ></div>
+      <div
+        className={`inline-flex p-3 rounded-xl bg-gradient-to-r ${gradient} text-white mb-6 shadow-lg`}
+      >
         {icon}
       </div>
       <h5 className="text-xl font-bold text-gray-900 mb-3">{title}</h5>
@@ -58,28 +67,47 @@ export default function Home() {
               </h1>
             </div>
             <nav className="hidden md:flex items-center space-x-8">
-              <Link href="#features" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+              <Link
+                href="#features"
+                className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
+              >
                 Tính năng
               </Link>
-              <Link href="#pricing" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+              <Link
+                href="#pricing"
+                className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
+              >
                 Bảng giá
               </Link>
-              <Link href="#contact" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+              <Link
+                href="#contact"
+                className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
+              >
                 Liên hệ
               </Link>
               {user ? (
                 <Link
-                  href={user.userType === 'owner' ? '/owner-dashboard' : '/tenant-dashboard'}
+                  href={
+                    user.userType === "owner"
+                      ? "/owner-dashboard"
+                      : "/tenant-dashboard"
+                  }
                   className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2.5 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl font-medium"
                 >
                   Dashboard
                 </Link>
               ) : (
                 <div className="flex items-center space-x-3">
-                  <Link href="/auth/login" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+                  <Link
+                    href="/auth/login"
+                    className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
+                  >
                     Đăng nhập
                   </Link>
-                  <Link href="/auth/register" className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2.5 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl font-medium">
+                  <Link
+                    href="/auth/register"
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2.5 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl font-medium"
+                  >
                     Đăng ký
                   </Link>
                 </div>
@@ -107,15 +135,22 @@ export default function Home() {
               </span>
             </h2>
             <p className="text-xl lg:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
-              Số hóa và tự động hóa quy trình quản lý nhà trọ. Giảm <span className="font-semibold text-blue-600">95% thời gian</span> vận hành,
-              tăng <span className="font-semibold text-green-600">80% hiệu quả</span> thu tiền cho chủ trọ.
+              Số hóa và tự động hóa quy trình quản lý nhà trọ. Giảm{" "}
+              <span className="font-semibold text-blue-600">95% thời gian</span>{" "}
+              vận hành, tăng{" "}
+              <span className="font-semibold text-green-600">80% hiệu quả</span>{" "}
+              thu tiền cho chủ trọ.
             </p>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
               {user ? (
                 <Link
-                  href={user.userType === 'owner' ? '/owner-dashboard' : '/tenant-dashboard'}
+                  href={
+                    user.userType === "owner"
+                      ? "/owner-dashboard"
+                      : "/tenant-dashboard"
+                  }
                   className="group relative bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-10 py-5 rounded-2xl text-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-2xl hover:shadow-blue-500/25 hover:scale-105"
                 >
                   <span className="relative z-10">Vào Dashboard</span>
@@ -123,11 +158,17 @@ export default function Home() {
                 </Link>
               ) : (
                 <>
-                  <Link href="/auth/register" className="group relative bg-gradient-to-r from-green-600 to-emerald-600 text-white px-10 py-5 rounded-2xl text-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition-all shadow-2xl hover:shadow-green-500/25 hover:scale-105">
+                  <Link
+                    href="/auth/register"
+                    className="group relative bg-gradient-to-r from-green-600 to-emerald-600 text-white px-10 py-5 rounded-2xl text-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition-all shadow-2xl hover:shadow-green-500/25 hover:scale-105"
+                  >
                     <span className="relative z-10">Đăng ký khách thuê</span>
                     <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-400 rounded-2xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
                   </Link>
-                  <Link href="/auth/login" className="group bg-white/80 backdrop-blur-lg text-gray-900 px-10 py-5 rounded-2xl text-lg font-semibold hover:bg-white transition-all shadow-xl hover:shadow-2xl border border-gray-200 hover:border-gray-300 hover:scale-105">
+                  <Link
+                    href="/auth/login"
+                    className="group bg-white/80 backdrop-blur-lg text-gray-900 px-10 py-5 rounded-2xl text-lg font-semibold hover:bg-white transition-all shadow-xl hover:shadow-2xl border border-gray-200 hover:border-gray-300 hover:scale-105"
+                  >
                     Đăng nhập
                   </Link>
                 </>
@@ -137,19 +178,27 @@ export default function Home() {
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
               <div className="text-center">
-                <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">1000+</div>
+                <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">
+                  1000+
+                </div>
                 <div className="text-gray-600">Chủ trọ tin dùng</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl lg:text-4xl font-bold text-green-600 mb-2">50K+</div>
+                <div className="text-3xl lg:text-4xl font-bold text-green-600 mb-2">
+                  50K+
+                </div>
                 <div className="text-gray-600">Phòng được quản lý</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl lg:text-4xl font-bold text-purple-600 mb-2">95%</div>
+                <div className="text-3xl lg:text-4xl font-bold text-purple-600 mb-2">
+                  95%
+                </div>
                 <div className="text-gray-600">Tiết kiệm thời gian</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl lg:text-4xl font-bold text-orange-600 mb-2">24/7</div>
+                <div className="text-3xl lg:text-4xl font-bold text-orange-600 mb-2">
+                  24/7
+                </div>
                 <div className="text-gray-600">Hỗ trợ khách hàng</div>
               </div>
             </div>
@@ -158,7 +207,10 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="relative py-24 bg-gradient-to-b from-white to-gray-50">
+      <section
+        id="features"
+        className="relative py-24 bg-gradient-to-b from-white to-gray-50"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 text-sm font-medium mb-6">
@@ -175,7 +227,8 @@ export default function Home() {
               </span>
             </h3>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Từ quản lý phòng trọ đến theo dõi doanh thu, SmartDorm cung cấp mọi công cụ bạn cần
+              Từ quản lý phòng trọ đến theo dõi doanh thu, SmartDorm cung cấp
+              mọi công cụ bạn cần
             </p>
           </div>
 
@@ -296,7 +349,8 @@ export default function Home() {
             </span>
           </h3>
           <p className="text-xl text-blue-100 mb-16 max-w-3xl mx-auto">
-            Sử dụng AI để tối ưu hóa quy trình quản lý và mang lại trải nghiệm tốt nhất
+            Sử dụng AI để tối ưu hóa quy trình quản lý và mang lại trải nghiệm
+            tốt nhất
           </p>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -304,8 +358,8 @@ export default function Home() {
               <div className="text-5xl mb-6 group-hover:animate-bounce">🔔</div>
               <h4 className="text-2xl font-bold mb-4">Thông báo tự động</h4>
               <p className="text-blue-100 leading-relaxed">
-                AI phân tích hành vi và gửi thông báo hóa đơn, nhắc nhở thanh toán,
-                hết hạn hợp đồng vào thời điểm tối ưu nhất.
+                AI phân tích hành vi và gửi thông báo hóa đơn, nhắc nhở thanh
+                toán, hết hạn hợp đồng vào thời điểm tối ưu nhất.
               </p>
             </div>
             <div className="group bg-white/10 backdrop-blur-lg p-8 rounded-2xl border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105">
@@ -320,8 +374,8 @@ export default function Home() {
               <div className="text-5xl mb-6 group-hover:animate-bounce">📈</div>
               <h4 className="text-2xl font-bold mb-4">Tối ưu giá cả</h4>
               <p className="text-blue-100 leading-relaxed">
-                AI phân tích thị trường, mùa vụ, xu hướng khu vực để đưa ra
-                gợi ý giá thuê tối ưu, tăng doanh thu.
+                AI phân tích thị trường, mùa vụ, xu hướng khu vực để đưa ra gợi
+                ý giá thuê tối ưu, tăng doanh thu.
               </p>
             </div>
           </div>
@@ -353,8 +407,12 @@ export default function Home() {
                   <ClockIcon className="h-8 w-8" />
                 </div>
                 <div className="text-4xl font-bold text-blue-600 mb-2">95%</div>
-                <p className="text-gray-600 font-medium">Giảm thời gian quản lý</p>
-                <p className="text-sm text-gray-500 mt-2">So với phương pháp truyền thống</p>
+                <p className="text-gray-600 font-medium">
+                  Giảm thời gian quản lý
+                </p>
+                <p className="text-sm text-gray-500 mt-2">
+                  So với phương pháp truyền thống
+                </p>
               </div>
             </div>
             <div className="text-center group">
@@ -362,9 +420,15 @@ export default function Home() {
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-2xl text-white text-2xl font-bold mb-4 group-hover:animate-pulse">
                   <CurrencyDollarIcon className="h-8 w-8" />
                 </div>
-                <div className="text-4xl font-bold text-green-600 mb-2">80%</div>
-                <p className="text-gray-600 font-medium">Tăng hiệu quả thu tiền</p>
-                <p className="text-sm text-gray-500 mt-2">Giảm nợ đọng và quá hạn</p>
+                <div className="text-4xl font-bold text-green-600 mb-2">
+                  80%
+                </div>
+                <p className="text-gray-600 font-medium">
+                  Tăng hiệu quả thu tiền
+                </p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Giảm nợ đọng và quá hạn
+                </p>
               </div>
             </div>
             <div className="text-center group">
@@ -372,9 +436,13 @@ export default function Home() {
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl text-white text-2xl font-bold mb-4 group-hover:animate-pulse">
                   <ShieldCheckIcon className="h-8 w-8" />
                 </div>
-                <div className="text-4xl font-bold text-purple-600 mb-2">24/7</div>
+                <div className="text-4xl font-bold text-purple-600 mb-2">
+                  24/7
+                </div>
                 <p className="text-gray-600 font-medium">Hỗ trợ khách hàng</p>
-                <p className="text-sm text-gray-500 mt-2">Luôn sẵn sàng hỗ trợ bạn</p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Luôn sẵn sàng hỗ trợ bạn
+                </p>
               </div>
             </div>
             <div className="text-center group">
@@ -382,9 +450,13 @@ export default function Home() {
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl text-white text-2xl font-bold mb-4 group-hover:animate-pulse">
                   <UserGroupIcon className="h-8 w-8" />
                 </div>
-                <div className="text-4xl font-bold text-orange-600 mb-2">1000+</div>
+                <div className="text-4xl font-bold text-orange-600 mb-2">
+                  1000+
+                </div>
                 <p className="text-gray-600 font-medium">Chủ trọ tin dùng</p>
-                <p className="text-sm text-gray-500 mt-2">Và con số vẫn tăng mỗi ngày</p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Và con số vẫn tăng mỗi ngày
+                </p>
               </div>
             </div>
           </div>
@@ -411,24 +483,34 @@ export default function Home() {
             </span>
           </h3>
           <p className="text-xl text-blue-100 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Tham gia cùng hàng nghìn chủ trọ đã tin tưởng sử dụng hệ thống của chúng tôi.
-            Dùng thử miễn phí 30 ngày, không cần thẻ tín dụng.
+            Tham gia cùng hàng nghìn chủ trọ đã tin tưởng sử dụng hệ thống của
+            chúng tôi. Dùng thử miễn phí 30 ngày, không cần thẻ tín dụng.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
             {user ? (
               <Link
-                href={user.userType === 'owner' ? '/owner-dashboard' : '/tenant-dashboard'}
+                href={
+                  user.userType === "owner"
+                    ? "/owner-dashboard"
+                    : "/tenant-dashboard"
+                }
                 className="group bg-white text-blue-600 px-10 py-5 rounded-2xl text-lg font-bold hover:bg-gray-50 transition-all shadow-2xl hover:shadow-white/25 hover:scale-105"
               >
                 <span className="relative z-10">Vào Dashboard</span>
               </Link>
             ) : (
               <>
-                <Link href="/auth/register" className="group bg-white text-blue-600 px-10 py-5 rounded-2xl text-lg font-bold hover:bg-gray-50 transition-all shadow-2xl hover:shadow-white/25 hover:scale-105">
+                <Link
+                  href="/auth/register"
+                  className="group bg-white text-blue-600 px-10 py-5 rounded-2xl text-lg font-bold hover:bg-gray-50 transition-all shadow-2xl hover:shadow-white/25 hover:scale-105"
+                >
                   <span className="relative z-10">Đăng ký khách thuê</span>
                 </Link>
-                <Link href="/auth/login" className="group border-2 border-white text-white px-10 py-5 rounded-2xl text-lg font-bold hover:bg-white hover:text-blue-600 transition-all hover:scale-105">
+                <Link
+                  href="/auth/login"
+                  className="group border-2 border-white text-white px-10 py-5 rounded-2xl text-lg font-bold hover:bg-white hover:text-blue-600 transition-all hover:scale-105"
+                >
                   Đăng nhập
                 </Link>
               </>
@@ -467,20 +549,32 @@ export default function Home() {
                 </h3>
               </div>
               <p className="text-gray-400 mb-6 leading-relaxed">
-                Hệ thống quản lý nhà trọ thông minh hàng đầu Việt Nam.
-                Giải pháp toàn diện cho chủ trọ và khách thuê.
+                Hệ thống quản lý nhà trọ thông minh hàng đầu Việt Nam. Giải pháp
+                toàn diện cho chủ trọ và khách thuê.
               </p>
               <div className="flex space-x-4">
-                <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors">
+                <a
+                  href="#"
+                  className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors"
+                >
                   📘
                 </a>
-                <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-400 transition-colors">
+                <a
+                  href="#"
+                  className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-400 transition-colors"
+                >
                   🐦
                 </a>
-                <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-pink-600 transition-colors">
+                <a
+                  href="#"
+                  className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-pink-600 transition-colors"
+                >
                   📷
                 </a>
-                <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors">
+                <a
+                  href="#"
+                  className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors"
+                >
                   💼
                 </a>
               </div>
@@ -489,44 +583,84 @@ export default function Home() {
             <div>
               <h4 className="text-lg font-bold mb-6 text-white">Sản phẩm</h4>
               <ul className="space-y-3">
-                <li><Link href="/auth/login" className="text-gray-400 hover:text-white transition-colors flex items-center group">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 group-hover:bg-white transition-colors"></span>
-                  Dashboard Chủ trọ
-                </Link></li>
-                <li><Link href="/auth/register" className="text-gray-400 hover:text-white transition-colors flex items-center group">
-                  <span className="w-2 h-2 bg-green-600 rounded-full mr-3 group-hover:bg-white transition-colors"></span>
-                  Đăng ký Khách thuê
-                </Link></li>
-                <li><Link href="#features" className="text-gray-400 hover:text-white transition-colors flex items-center group">
-                  <span className="w-2 h-2 bg-purple-600 rounded-full mr-3 group-hover:bg-white transition-colors"></span>
-                  Tính năng
-                </Link></li>
-                <li><Link href="#" className="text-gray-400 hover:text-white transition-colors flex items-center group">
-                  <span className="w-2 h-2 bg-orange-600 rounded-full mr-3 group-hover:bg-white transition-colors"></span>
-                  API & Tích hợp
-                </Link></li>
+                <li>
+                  <Link
+                    href="/auth/login"
+                    className="text-gray-400 hover:text-white transition-colors flex items-center group"
+                  >
+                    <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 group-hover:bg-white transition-colors"></span>
+                    Dashboard Chủ trọ
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/auth/register"
+                    className="text-gray-400 hover:text-white transition-colors flex items-center group"
+                  >
+                    <span className="w-2 h-2 bg-green-600 rounded-full mr-3 group-hover:bg-white transition-colors"></span>
+                    Đăng ký Khách thuê
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#features"
+                    className="text-gray-400 hover:text-white transition-colors flex items-center group"
+                  >
+                    <span className="w-2 h-2 bg-purple-600 rounded-full mr-3 group-hover:bg-white transition-colors"></span>
+                    Tính năng
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-gray-400 hover:text-white transition-colors flex items-center group"
+                  >
+                    <span className="w-2 h-2 bg-orange-600 rounded-full mr-3 group-hover:bg-white transition-colors"></span>
+                    API & Tích hợp
+                  </Link>
+                </li>
               </ul>
             </div>
 
             <div>
               <h4 className="text-lg font-bold mb-6 text-white">Hỗ trợ</h4>
               <ul className="space-y-3">
-                <li><Link href="#" className="text-gray-400 hover:text-white transition-colors flex items-center group">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 group-hover:bg-white transition-colors"></span>
-                  Hướng dẫn sử dụng
-                </Link></li>
-                <li><Link href="#" className="text-gray-400 hover:text-white transition-colors flex items-center group">
-                  <span className="w-2 h-2 bg-green-600 rounded-full mr-3 group-hover:bg-white transition-colors"></span>
-                  FAQ
-                </Link></li>
-                <li><Link href="#" className="text-gray-400 hover:text-white transition-colors flex items-center group">
-                  <span className="w-2 h-2 bg-purple-600 rounded-full mr-3 group-hover:bg-white transition-colors"></span>
-                  Liên hệ hỗ trợ
-                </Link></li>
-                <li><Link href="#" className="text-gray-400 hover:text-white transition-colors flex items-center group">
-                  <span className="w-2 h-2 bg-orange-600 rounded-full mr-3 group-hover:bg-white transition-colors"></span>
-                  Cộng đồng
-                </Link></li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-gray-400 hover:text-white transition-colors flex items-center group"
+                  >
+                    <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 group-hover:bg-white transition-colors"></span>
+                    Hướng dẫn sử dụng
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-gray-400 hover:text-white transition-colors flex items-center group"
+                  >
+                    <span className="w-2 h-2 bg-green-600 rounded-full mr-3 group-hover:bg-white transition-colors"></span>
+                    FAQ
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-gray-400 hover:text-white transition-colors flex items-center group"
+                  >
+                    <span className="w-2 h-2 bg-purple-600 rounded-full mr-3 group-hover:bg-white transition-colors"></span>
+                    Liên hệ hỗ trợ
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-gray-400 hover:text-white transition-colors flex items-center group"
+                  >
+                    <span className="w-2 h-2 bg-orange-600 rounded-full mr-3 group-hover:bg-white transition-colors"></span>
+                    Cộng đồng
+                  </Link>
+                </li>
               </ul>
             </div>
 
@@ -570,13 +704,22 @@ export default function Home() {
                 &copy; 2024 SmartDorm. Tất cả quyền được bảo lưu.
               </div>
               <div className="flex space-x-6 text-sm">
-                <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+                <Link
+                  href="#"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
                   Điều khoản sử dụng
                 </Link>
-                <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+                <Link
+                  href="#"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
                   Chính sách bảo mật
                 </Link>
-                <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+                <Link
+                  href="#"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
                   Cookie Policy
                 </Link>
               </div>
@@ -587,7 +730,11 @@ export default function Home() {
 
       <style jsx>{`
         .bg-grid-pattern {
-          background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px);
+          background-image: radial-gradient(
+            circle,
+            #e5e7eb 1px,
+            transparent 1px
+          );
           background-size: 20px 20px;
         }
       `}</style>
