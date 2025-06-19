@@ -2,14 +2,12 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
 import { 
   ArrowLeftIcon,
   PrinterIcon,
   DocumentArrowDownIcon,
   CheckCircleIcon,
   CalendarIcon,
-  CurrencyDollarIcon,
   HomeIcon,
   UserIcon,
   ClockIcon,
@@ -46,7 +44,8 @@ const mockReceipts = {
       { description: "Tiền điện (150 kWh x 3,500đ)", amount: 525000 },
       { description: "Tiền nước (15m³ x 25,000đ)", amount: 375000 },
       { description: "Phí dịch vụ", amount: 100000 },
-      { description: "Phí internet", amount: 200000 }
+      { description: "Phí internet", amount: 200000 },
+      { description: "Giảm giá khách hàng thân thiết", amount: -700000 }
     ],
     notes: "Cảm ơn bạn đã thanh toán đúng hạn. Chúc bạn có một tháng vui vẻ!"
   },
@@ -78,13 +77,41 @@ const mockReceipts = {
       { description: "Phí quản lý điện", amount: 30000 }
     ],
     notes: "Thanh toán bằng tiền mặt tại văn phòng."
+  },
+  "3": {
+    id: "3",
+    billNumber: "HD003", 
+    type: "Tiền nước",
+    month: "01/2024",
+    amount: 120000,
+    paidDate: "2024-01-30",
+    dueDate: "2024-02-25",
+    status: "paid",
+    paymentMethod: "ZaloPay",
+    transactionId: "ZP123456789",
+    tenant: {
+      name: "Nguyễn Văn A",
+      room: "101",
+      phone: "0123456789", 
+      email: "tenant@demo.com"
+    },
+    landlord: {
+      name: "Chủ trọ ABC",
+      phone: "0987654321",
+      email: "owner@demo.com",
+      address: "123 Đường ABC, Quận 1, TP.HCM"
+    },
+    details: [
+      { description: "Tiền nước tháng 01/2024 (5m³ x 25,000đ)", amount: 125000 },
+      { description: "Giảm giá thanh toán sớm", amount: -5000 }
+    ],
+    notes: "Cảm ơn bạn đã thanh toán sớm và được giảm giá."
   }
 };
 
 export default function ReceiptPage() {
   const params = useParams();
   const receiptId = params.id as string;
-  const [showPrintPreview, setShowPrintPreview] = useState(false);
 
   const receipt = mockReceipts[receiptId as keyof typeof mockReceipts];
 
@@ -106,11 +133,14 @@ export default function ReceiptPage() {
   };
 
   const handleDownload = () => {
-    // Simulate PDF download
-    const element = document.createElement('a');
-    element.href = '#';
-    element.download = `bien-lai-${receipt.billNumber}.pdf`;
-    element.click();
+    // Create a more realistic download experience
+    const link = document.createElement('a');
+    const content = `Biên lai ${receipt.billNumber} - ${receipt.type} - ${receipt.amount.toLocaleString('vi-VN')}đ`;
+    const blob = new Blob([content], { type: 'text/plain' });
+    link.href = URL.createObjectURL(blob);
+    link.download = `bien-lai-${receipt.billNumber}-${receipt.month.replace('/', '-')}.txt`;
+    link.click();
+    URL.revokeObjectURL(link.href);
   };
 
   const totalAmount = receipt.details.reduce((sum, item) => sum + item.amount, 0);

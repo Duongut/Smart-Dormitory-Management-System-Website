@@ -168,7 +168,41 @@ export default function TenantDashboard() {
     priority: "medium",
     location: ""
   });
-  const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
+
+  // Profile editing states
+  const [showEditProfileModal, setShowEditProfileModal] = useState(false);
+  const [showEditEmergencyModal, setShowEditEmergencyModal] = useState(false);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
+
+  // Profile form states
+  const [profileForm, setProfileForm] = useState({
+    fullName: "Nguyễn Văn A",
+    email: "tenant@demo.com",
+    phone: "0123456789",
+    idNumber: "123456789012",
+    birthDate: "1995-05-15",
+    gender: "Nam",
+    address: "456 Đường XYZ, Quận ABC, TP.HCM"
+  });
+
+  const [emergencyForm, setEmergencyForm] = useState({
+    name: "Nguyễn Văn B (Anh trai)",
+    phone: "0987654321",
+    relationship: "Anh trai",
+    address: ""
+  });
+
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
+
+  const [avatar, setAvatar] = useState("A");
+  const [avatarType, setAvatarType] = useState<"letter" | "image">("letter");
+  const [avatarImage, setAvatarImage] = useState<string | null>(null);
+  const [avatarTab, setAvatarTab] = useState<"letter" | "upload">("letter");
 
   // Room search filters
   const [roomFilters, setRoomFilters] = useState({
@@ -248,6 +282,87 @@ export default function TenantDashboard() {
     });
     // Show success message (you can implement toast notification here)
     alert("Báo cáo sự cố đã được gửi thành công!");
+  };
+
+  // Profile handling functions
+  const handleUpdateProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simulate API call
+    console.log("Updating profile:", profileForm);
+    setShowEditProfileModal(false);
+    alert("Cập nhật thông tin thành công!");
+  };
+
+  const handleUpdateEmergency = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simulate API call
+    console.log("Updating emergency contact:", emergencyForm);
+    setShowEditEmergencyModal(false);
+    alert("Cập nhật liên hệ khẩn cấp thành công!");
+  };
+
+  const handleChangePassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      alert("Mật khẩu xác nhận không khớp!");
+      return;
+    }
+    
+    if (passwordForm.newPassword.length < 6) {
+      alert("Mật khẩu mới phải có ít nhất 6 ký tự!");
+      return;
+    }
+
+    // Simulate API call
+    console.log("Changing password");
+    setShowChangePasswordModal(false);
+    setPasswordForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: ""
+    });
+    alert("Đổi mật khẩu thành công!");
+  };
+
+  const handleAvatarChange = (newAvatar: string) => {
+    setAvatar(newAvatar);
+    setAvatarType("letter");
+    setAvatarImage(null);
+    setShowAvatarModal(false);
+    alert("Cập nhật ảnh đại diện thành công!");
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        alert("Kích thước ảnh không được vượt quá 5MB!");
+        return;
+      }
+      
+      if (!file.type.startsWith('image/')) {
+        alert("Vui lòng chọn file ảnh!");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageUrl = e.target?.result as string;
+        setAvatarImage(imageUrl);
+        setAvatarType("image");
+        setShowAvatarModal(false);
+        alert("Cập nhật ảnh đại diện thành công!");
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setAvatarImage(null);
+    setAvatarType("letter");
+    setAvatar("A");
+    alert("Đã xóa ảnh đại diện!");
   };
 
   return (
@@ -702,67 +817,121 @@ export default function TenantDashboard() {
         {/* Bills Tab */}
         {activeTab === "bills" && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">Hóa đơn của tôi</h2>
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">Hóa đơn của tôi</h2>
+              <div className="text-sm text-gray-600">
+                Quản lý thông tin và hoạt động thuê trọ
+              </div>
+            </div>
             
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Loại hóa đơn
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Tháng
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Số tiền
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Hạn thanh toán
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Trạng thái
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Thao tác
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {mockMyBills.map((bill) => (
-                    <tr key={bill.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {bill.type}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {bill.month}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {bill.amount.toLocaleString()}đ
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {bill.dueDate}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(bill.status)}`}>
-                          {getStatusText(bill.status)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            {/* Bills Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-2xl p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-red-100">Chờ thanh toán</p>
+                    <p className="text-2xl font-bold">
+                      {mockMyBills.filter(bill => bill.status === "pending").length}
+                    </p>
+                  </div>
+                  <div className="text-3xl opacity-80">📋</div>
+                </div>
+              </div>
+              <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-green-100">Đã thanh toán</p>
+                    <p className="text-2xl font-bold">
+                      {mockMyBills.filter(bill => bill.status === "paid").length}
+                    </p>
+                  </div>
+                  <div className="text-3xl opacity-80">✅</div>
+                </div>
+              </div>
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-blue-100">Tổng tiền tháng này</p>
+                    <p className="text-2xl font-bold">
+                      {mockMyBills
+                        .filter(bill => bill.month === "02/2024")
+                        .reduce((sum, bill) => sum + bill.amount, 0)
+                        .toLocaleString()}đ
+                    </p>
+                  </div>
+                  <div className="text-3xl opacity-80">💰</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bills List */}
+            <div className="space-y-4">
+              {mockMyBills.map((bill) => (
+                <div key={bill.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow">
+                  <div className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${
+                          bill.type === "Tiền phòng" ? "bg-blue-100" :
+                          bill.type === "Tiền điện" ? "bg-yellow-100" : "bg-cyan-100"
+                        }`}>
+                          {bill.type === "Tiền phòng" ? "🏠" :
+                           bill.type === "Tiền điện" ? "⚡" : "💧"}
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900">{bill.type}</h3>
+                          <p className="text-sm text-gray-600">Tháng {bill.month}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-gray-900">
+                          {bill.amount.toLocaleString()}đ
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Hạn: {bill.dueDate}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4 flex items-center justify-between">
+                      <span className={`px-3 py-1 text-sm rounded-full font-medium ${getStatusColor(bill.status)}`}>
+                        {getStatusText(bill.status)}
+                      </span>
+                      <div className="flex space-x-3">
                         {bill.status === "pending" ? (
-                          <Link href="/payment" className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 inline-block">
-                            Thanh toán
+                          <Link 
+                            href="/payment" 
+                            className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-2 rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all font-medium shadow-lg hover:shadow-xl"
+                          >
+                            💳 Thanh toán ngay
                           </Link>
                         ) : (
-                          <Link href={`/receipt/${bill.id}`} className="text-blue-600 hover:text-blue-900">
-                            Xem biên lai
+                          <Link 
+                            href={`/receipt/${bill.id}`} 
+                            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-lg hover:shadow-xl"
+                          >
+                            📄 Xem biên lai
                           </Link>
                         )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Payment Reminder */}
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6">
+              <div className="flex items-start space-x-4">
+                <div className="text-2xl">💡</div>
+                <div>
+                  <h4 className="font-semibold text-amber-800 mb-2">Lời nhắc thanh toán</h4>
+                  <p className="text-amber-700 text-sm">
+                    Để tránh phí phạt, vui lòng thanh toán các hóa đơn trước ngày hết hạn. 
+                    Bạn có thể thanh toán online qua nhiều phương thức: MoMo, ZaloPay, Chuyển khoản ngân hàng.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -903,16 +1072,28 @@ export default function TenantDashboard() {
               <div className="lg:col-span-1">
                 <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
                   <div className="text-center">
-                    <div className="w-24 h-24 bg-gradient-to-r from-green-400 to-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-3xl font-bold">
-                      A
+                    <div className="w-24 h-24 bg-gradient-to-r from-green-400 to-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-3xl font-bold cursor-pointer hover:scale-105 transition-transform overflow-hidden"
+                         onClick={() => setShowAvatarModal(true)}>
+                      {avatarType === "image" && avatarImage ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img 
+                          src={avatarImage} 
+                          alt="Avatar" 
+                          className="w-full h-full object-cover rounded-full"
+                        />
+                      ) : (
+                        avatar
+                      )}
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">Nguyễn Văn A</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">{profileForm.fullName}</h3>
                     <p className="text-gray-600 mb-4">Khách thuê</p>
                     <div className="flex items-center justify-center text-sm text-gray-500 mb-4">
                       <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
                       Đang thuê phòng 101
                     </div>
-                    <button className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors">
+                    <button 
+                      onClick={() => setShowAvatarModal(true)}
+                      className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors">
                       Chỉnh sửa ảnh đại diện
                     </button>
                   </div>
@@ -924,7 +1105,9 @@ export default function TenantDashboard() {
                 <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
                   <div className="flex justify-between items-center mb-6">
                     <h3 className="text-lg font-semibold text-gray-900">Thông tin cá nhân</h3>
-                    <button className="text-green-600 hover:text-green-700 font-medium">
+                    <button 
+                      onClick={() => setShowEditProfileModal(true)}
+                      className="text-green-600 hover:text-green-700 font-medium">
                       Chỉnh sửa
                     </button>
                   </div>
@@ -934,7 +1117,7 @@ export default function TenantDashboard() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">Họ và tên</label>
                       <input
                         type="text"
-                        value="Nguyễn Văn A"
+                        value={profileForm.fullName}
                         className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 text-gray-900"
                         readOnly
                       />
@@ -943,7 +1126,7 @@ export default function TenantDashboard() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                       <input
                         type="email"
-                        value="tenant@demo.com"
+                        value={profileForm.email}
                         className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 text-gray-900"
                         readOnly
                       />
@@ -952,7 +1135,7 @@ export default function TenantDashboard() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">Số điện thoại</label>
                       <input
                         type="tel"
-                        value="0123456789"
+                        value={profileForm.phone}
                         className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 text-gray-900"
                         readOnly
                       />
@@ -961,7 +1144,7 @@ export default function TenantDashboard() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">CCCD/CMND</label>
                       <input
                         type="text"
-                        value="123456789012"
+                        value={profileForm.idNumber}
                         className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50"
                         readOnly
                       />
@@ -970,7 +1153,7 @@ export default function TenantDashboard() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">Ngày sinh</label>
                       <input
                         type="date"
-                        value="1995-05-15"
+                        value={profileForm.birthDate}
                         className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50"
                         readOnly
                       />
@@ -978,14 +1161,14 @@ export default function TenantDashboard() {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Giới tính</label>
                       <select className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50" disabled>
-                        <option>Nam</option>
+                        <option>{profileForm.gender}</option>
                       </select>
                     </div>
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-2">Địa chỉ thường trú</label>
                       <input
                         type="text"
-                        value="456 Đường XYZ, Quận ABC, TP.HCM"
+                        value={profileForm.address}
                         className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50"
                         readOnly
                       />
@@ -1021,7 +1204,9 @@ export default function TenantDashboard() {
             <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-semibold text-gray-900">Liên hệ khẩn cấp</h3>
-                <button className="text-green-600 hover:text-green-700 font-medium">
+                <button 
+                  onClick={() => setShowEditEmergencyModal(true)}
+                  className="text-green-600 hover:text-green-700 font-medium">
                   Chỉnh sửa
                 </button>
               </div>
@@ -1030,7 +1215,7 @@ export default function TenantDashboard() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Tên người liên hệ</label>
                   <input
                     type="text"
-                    value="Nguyễn Văn B (Anh trai)"
+                    value={emergencyForm.name}
                     className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 text-gray-900"
                     readOnly
                   />
@@ -1039,7 +1224,7 @@ export default function TenantDashboard() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Số điện thoại</label>
                   <input
                     type="tel"
-                    value="0987654321"
+                    value={emergencyForm.phone}
                     className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 text-gray-900"
                     readOnly
                   />
@@ -1072,7 +1257,9 @@ export default function TenantDashboard() {
                   </label>
                 </div>
                 <div className="pt-4 border-t border-gray-200">
-                  <button className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors">
+                  <button 
+                    onClick={() => setShowChangePasswordModal(true)}
+                    className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors">
                     Đổi mật khẩu
                   </button>
                 </div>
@@ -1174,6 +1361,441 @@ export default function TenantDashboard() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Profile Modal */}
+      {showEditProfileModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900">Chỉnh sửa thông tin cá nhân</h3>
+              <p className="text-gray-600 mt-1">Cập nhật thông tin cá nhân của bạn</p>
+            </div>
+            <form onSubmit={handleUpdateProfile} className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Họ và tên *
+                  </label>
+                  <input
+                    type="text"
+                    value={profileForm.fullName}
+                    onChange={(e) => setProfileForm({...profileForm, fullName: e.target.value})}
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    value={profileForm.email}
+                    onChange={(e) => setProfileForm({...profileForm, email: e.target.value})}
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Số điện thoại *
+                  </label>
+                  <input
+                    type="tel"
+                    value={profileForm.phone}
+                    onChange={(e) => setProfileForm({...profileForm, phone: e.target.value})}
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    CCCD/CMND *
+                  </label>
+                  <input
+                    type="text"
+                    value={profileForm.idNumber}
+                    onChange={(e) => setProfileForm({...profileForm, idNumber: e.target.value})}
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ngày sinh
+                  </label>
+                  <input
+                    type="date"
+                    value={profileForm.birthDate}
+                    onChange={(e) => setProfileForm({...profileForm, birthDate: e.target.value})}
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Giới tính
+                  </label>
+                  <select
+                    value={profileForm.gender}
+                    onChange={(e) => setProfileForm({...profileForm, gender: e.target.value})}
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900"
+                  >
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                    <option value="Khác">Khác</option>
+                  </select>
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Địa chỉ thường trú
+                  </label>
+                  <textarea
+                    value={profileForm.address}
+                    onChange={(e) => setProfileForm({...profileForm, address: e.target.value})}
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900"
+                    rows={3}
+                    placeholder="Nhập địa chỉ thường trú của bạn"
+                  />
+                </div>
+              </div>
+
+              <div className="flex space-x-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowEditProfileModal(false)}
+                  className="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  Cập nhật
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Emergency Contact Modal */}
+      {showEditEmergencyModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900">Chỉnh sửa liên hệ khẩn cấp</h3>
+              <p className="text-gray-600 mt-1">Cập nhật thông tin người liên hệ khẩn cấp</p>
+            </div>
+            <form onSubmit={handleUpdateEmergency} className="p-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tên người liên hệ *
+                  </label>
+                  <input
+                    type="text"
+                    value={emergencyForm.name}
+                    onChange={(e) => setEmergencyForm({...emergencyForm, name: e.target.value})}
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900"
+                    required
+                    placeholder="VD: Nguyễn Văn B"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Mối quan hệ
+                  </label>
+                  <select
+                    value={emergencyForm.relationship}
+                    onChange={(e) => setEmergencyForm({...emergencyForm, relationship: e.target.value})}
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900"
+                  >
+                    <option value="Bố">Bố</option>
+                    <option value="Mẹ">Mẹ</option>
+                    <option value="Anh trai">Anh trai</option>
+                    <option value="Chị gái">Chị gái</option>
+                    <option value="Em trai">Em trai</option>
+                    <option value="Em gái">Em gái</option>
+                    <option value="Bạn bè">Bạn bè</option>
+                    <option value="Người thân">Người thân</option>
+                    <option value="Khác">Khác</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Số điện thoại *
+                  </label>
+                  <input
+                    type="tel"
+                    value={emergencyForm.phone}
+                    onChange={(e) => setEmergencyForm({...emergencyForm, phone: e.target.value})}
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900"
+                    required
+                    placeholder="VD: 0987654321"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Địa chỉ (tùy chọn)
+                  </label>
+                  <textarea
+                    value={emergencyForm.address}
+                    onChange={(e) => setEmergencyForm({...emergencyForm, address: e.target.value})}
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900"
+                    rows={3}
+                    placeholder="Địa chỉ của người liên hệ khẩn cấp"
+                  />
+                </div>
+              </div>
+
+              <div className="flex space-x-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowEditEmergencyModal(false)}
+                  className="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  Cập nhật
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Change Password Modal */}
+      {showChangePasswordModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-md w-full">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900">Đổi mật khẩu</h3>
+              <p className="text-gray-600 mt-1">Cập nhật mật khẩu cho tài khoản của bạn</p>
+            </div>
+            <form onSubmit={handleChangePassword} className="p-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Mật khẩu hiện tại *
+                  </label>
+                  <input
+                    type="password"
+                    value={passwordForm.currentPassword}
+                    onChange={(e) => setPasswordForm({...passwordForm, currentPassword: e.target.value})}
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900"
+                    required
+                    placeholder="Nhập mật khẩu hiện tại"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Mật khẩu mới *
+                  </label>
+                  <input
+                    type="password"
+                    value={passwordForm.newPassword}
+                    onChange={(e) => setPasswordForm({...passwordForm, newPassword: e.target.value})}
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900"
+                    required
+                    placeholder="Nhập mật khẩu mới (ít nhất 6 ký tự)"
+                    minLength={6}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Xác nhận mật khẩu mới *
+                  </label>
+                  <input
+                    type="password"
+                    value={passwordForm.confirmPassword}
+                    onChange={(e) => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
+                    className="form-input w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900"
+                    required
+                    placeholder="Nhập lại mật khẩu mới"
+                  />
+                </div>
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <strong>Lưu ý:</strong> Mật khẩu mới phải có ít nhất 6 ký tự và nên bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex space-x-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowChangePasswordModal(false);
+                    setPasswordForm({currentPassword: "", newPassword: "", confirmPassword: ""});
+                  }}
+                  className="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Đổi mật khẩu
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Avatar Selection Modal */}
+      {showAvatarModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900">Chỉnh sửa ảnh đại diện</h3>
+              <p className="text-gray-600 mt-1">Chọn ký tự hoặc tải ảnh làm ảnh đại diện của bạn</p>
+            </div>
+            
+            {/* Tab Navigation */}
+            <div className="flex border-b border-gray-200">
+              <button
+                onClick={() => setAvatarTab("letter")}
+                className={`flex-1 px-6 py-3 text-sm font-medium transition-colors ${
+                  avatarTab === "letter" 
+                    ? "text-green-600 border-b-2 border-green-600 bg-green-50" 
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                <span className="mr-2">🔤</span>
+                Chọn ký tự
+              </button>
+              <button
+                onClick={() => setAvatarTab("upload")}
+                className={`flex-1 px-6 py-3 text-sm font-medium transition-colors ${
+                  avatarTab === "upload" 
+                    ? "text-green-600 border-b-2 border-green-600 bg-green-50" 
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                <span className="mr-2">📷</span>
+                Tải ảnh lên
+              </button>
+            </div>
+
+            <div className="p-6">
+              {/* Letter Selection Tab */}
+              {avatarTab === "letter" && (
+                <div>
+                  <div className="grid grid-cols-5 gap-4 mb-6">
+                    {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T'].map((letter) => (
+                      <button
+                        key={letter}
+                        onClick={() => handleAvatarChange(letter)}
+                        className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg transition-all hover:scale-110 ${
+                          avatar === letter && avatarType === "letter"
+                            ? 'bg-gradient-to-r from-green-600 to-blue-600 ring-4 ring-green-200' 
+                            : 'bg-gradient-to-r from-gray-400 to-gray-600 hover:from-green-400 hover:to-blue-500'
+                        }`}
+                      >
+                        {letter}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-500 mb-4">Ảnh đại diện hiện tại:</p>
+                    <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-blue-500 rounded-full mx-auto flex items-center justify-center text-white text-2xl font-bold mb-4 overflow-hidden">
+                      {avatarType === "image" && avatarImage ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img 
+                          src={avatarImage} 
+                          alt="Current Avatar" 
+                          className="w-full h-full object-cover rounded-full"
+                        />
+                      ) : (
+                        avatar
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Upload Tab */}
+              {avatarTab === "upload" && (
+                <div className="space-y-6">
+                  {/* Current Avatar Preview */}
+                  <div className="text-center">
+                    <p className="text-sm text-gray-500 mb-4">Ảnh đại diện hiện tại:</p>
+                    <div className="w-24 h-24 bg-gradient-to-r from-green-400 to-blue-500 rounded-full mx-auto flex items-center justify-center text-white text-2xl font-bold mb-4 overflow-hidden">
+                      {avatarType === "image" && avatarImage ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img 
+                          src={avatarImage} 
+                          alt="Current Avatar" 
+                          className="w-full h-full object-cover rounded-full"
+                        />
+                      ) : (
+                        avatar
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Upload Area */}
+                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-green-400 transition-colors">
+                    <div className="text-4xl mb-4">📷</div>
+                    <h4 className="text-lg font-medium text-gray-900 mb-2">Tải ảnh lên</h4>
+                    <p className="text-sm text-gray-500 mb-4">Chọn ảnh từ thiết bị của bạn</p>
+                    <label className="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors cursor-pointer">
+                      <span>Chọn ảnh</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                    </label>
+                    <p className="text-xs text-gray-400 mt-2">Hỗ trợ: JPG, PNG, GIF. Tối đa 5MB</p>
+                  </div>
+
+                  {/* Remove Image Option */}
+                  {avatarType === "image" && avatarImage && (
+                    <div className="text-center">
+                      <button
+                        onClick={handleRemoveImage}
+                        className="text-red-600 hover:text-red-700 text-sm font-medium"
+                      >
+                        🗑️ Xóa ảnh hiện tại
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Upload Tips */}
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <h5 className="font-medium text-blue-900 mb-2">💡 Gợi ý cho ảnh đẹp:</h5>
+                    <ul className="text-sm text-blue-800 space-y-1">
+                      <li>• Sử dụng ảnh chân dung rõ nét</li>
+                      <li>• Khuôn mặt chiếm khoảng 60% ảnh</li>
+                      <li>• Ánh sáng tự nhiên, tránh ngược sáng</li>
+                      <li>• Nền đơn giản, không quá rối</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {/* Modal Actions */}
+              <div className="flex space-x-3 mt-6">
+                <button
+                  onClick={() => setShowAvatarModal(false)}
+                  className="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Đóng
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

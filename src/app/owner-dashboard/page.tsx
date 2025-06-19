@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
@@ -144,6 +143,117 @@ const mockConversations = [
   }
 ];
 
+const mockReviews = [
+  {
+    id: 1,
+    tenant: "Nguyễn Văn A",
+    room: "101",
+    rating: 5,
+    date: "2024-03-01",
+    comment: "Phòng rất sạch sẽ, tiện nghi đầy đủ. Chủ trọ nhiệt tình, hỗ trợ nhanh chóng khi có vấn đề. Vị trí thuận lợi, gần trường học và chợ. Rất hài lòng!",
+    categories: {
+      cleanliness: 5,
+      amenities: 5,
+      location: 5,
+      price: 4,
+      owner: 5
+    },
+    response: "Cảm ơn bạn rất nhiều vì đánh giá tích cực! Chúng tôi luôn cố gắng tạo môi trường sống tốt nhất cho các bạn sinh viên. Chúc bạn học tập tốt!",
+    responseDate: "2024-03-02",
+    helpfulCount: 12
+  },
+  {
+    id: 2,
+    tenant: "Ẩn danh",
+    room: "102",
+    rating: 4,
+    date: "2024-02-28",
+    comment: "Phòng khá tốt, giá cả hợp lý. Máy lạnh hoạt động tốt, internet ổn định. Chỉ có điều âm thanh cách âm chưa tốt lắm, đôi khi nghe thấy tiếng từ phòng bên.",
+    categories: {
+      cleanliness: 4,
+      amenities: 4,
+      location: 4,
+      price: 5,
+      owner: 4
+    },
+    response: null,
+    responseDate: null,
+    helpfulCount: 8
+  },
+  {
+    id: 3,
+    tenant: "Trần Thị B",
+    room: "201",
+    rating: 5,
+    date: "2024-02-25",
+    comment: "Chủ trọ rất tận tâm và chu đáo. Phòng được trang bị đầy đủ nội thất, wifi nhanh. Khu vực an ninh tốt, có camera giám sát. Giá thuê hợp lý so với chất lượng.",
+    categories: {
+      cleanliness: 5,
+      amenities: 5,
+      location: 4,
+      price: 5,
+      owner: 5
+    },
+    response: "Cảm ơn bạn! Chúng tôi sẽ tiếp tục cải thiện để mang lại trải nghiệm tốt nhất.",
+    responseDate: "2024-02-26",
+    helpfulCount: 15
+  },
+  {
+    id: 4,
+    tenant: "Lê Văn C",
+    room: "102",
+    rating: 3,
+    date: "2024-02-20",
+    comment: "Phòng ổn, vị trí thuận tiện. Tuy nhiên, nước nóng không ổn định, đôi khi bị mất nước. Chủ trọ có hỗ trợ nhưng vẫn chưa khắc phục triệt để.",
+    categories: {
+      cleanliness: 4,
+      amenities: 2,
+      location: 4,
+      price: 4,
+      owner: 3
+    },
+    response: "Cảm ơn bạn đã góp ý. Chúng tôi đã liên hệ thợ sửa chữa hệ thống nước nóng và sẽ khắc phục trong tuần này.",
+    responseDate: "2024-02-21",
+    helpfulCount: 5
+  },
+  {
+    id: 5,
+    tenant: "Phạm Thị D",
+    room: "203",
+    rating: 4,
+    date: "2024-02-15",
+    comment: "Phòng sạch sẽ, view đẹp. Chủ trọ dễ thương, hay hỏi thăm. Giá hợp lý. Chỉ có điều bãi xe hơi chật, khó đỗ xe máy.",
+    categories: {
+      cleanliness: 5,
+      amenities: 4,
+      location: 3,
+      price: 4,
+      owner: 5
+    },
+    response: null,
+    responseDate: null,
+    helpfulCount: 3
+  },
+  {
+    id: 6,
+    tenant: "Hoàng Văn E",
+    room: "101",
+    rating: 2,
+    date: "2024-02-10",
+    comment: "Phòng có mùi ẩm mốc, cần được sơn lại. Điều hòa cũ, tiếng ồn lớn. Giá hơi cao so với chất lượng. Cần cải thiện nhiều.",
+    categories: {
+      cleanliness: 2,
+      amenities: 2,
+      location: 3,
+      price: 2,
+      owner: 3
+    },
+    response: "Cảm ơn bạn đã phản hồi. Chúng tôi sẽ tiến hành sơn lại phòng và thay điều hòa mới trong tháng này.",
+    responseDate: "2024-02-11",
+    helpfulCount: 7
+  }
+];
+
 export default function OwnerDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const { logout } = useAuth();
@@ -160,16 +270,29 @@ export default function OwnerDashboard() {
   const [showBillModal, setShowBillModal] = useState(false);
   const [showReportDetailModal, setShowReportDetailModal] = useState(false);
   const [showReviewResponseModal, setShowReviewResponseModal] = useState(false);
+  const [showNewMessageModal, setShowNewMessageModal] = useState(false);
 
   // Form states
-  const [editingRoom, setEditingRoom] = useState<any>(null);
-  const [editingTenant, setEditingTenant] = useState<any>(null);
-  const [editingBill, setEditingBill] = useState<any>(null);
-  const [selectedReport, setSelectedReport] = useState<any>(null);
-  const [selectedReview, setSelectedReview] = useState<any>(null);
+  const [editingRoom, setEditingRoom] = useState<unknown>(null);
+  const [editingTenant, setEditingTenant] = useState<unknown>(null);
+  const [editingBill, setEditingBill] = useState<unknown>(null);
+  const [selectedReport, setSelectedReport] = useState<unknown>(null);
+  const [selectedReview, setSelectedReview] = useState<unknown>(null);
   const [responseText, setResponseText] = useState("");
-  const [selectedConversation, setSelectedConversation] = useState<any>(null);
+  const [selectedConversation, setSelectedConversation] = useState<unknown>(null);
   const [newMessage, setNewMessage] = useState("");
+
+  // Filter states
+  const [reportStatusFilter, setReportStatusFilter] = useState("all");
+  const [reportPriorityFilter, setReportPriorityFilter] = useState("all");
+  const [reviewRatingFilter, setReviewRatingFilter] = useState("all");
+  const [reviewRoomFilter, setReviewRoomFilter] = useState("all");
+
+  // New message form
+  const [newMessageForm, setNewMessageForm] = useState({
+    tenantId: "",
+    message: ""
+  });
 
   // Form data
   const [roomForm, setRoomForm] = useState({
@@ -233,16 +356,16 @@ export default function OwnerDashboard() {
   };
 
   // Modal handlers
-  const openRoomModal = (room?: any) => {
+  const openRoomModal = (room?: unknown) => {
     if (room) {
       setEditingRoom(room);
       setRoomForm({
-        number: room.number,
-        price: room.price.toString(),
-        area: room.area.toString(),
-        status: room.status,
-        description: room.description || "",
-        amenities: room.amenities || []
+        number: (room as any).number,
+        price: (room as any).price.toString(),
+        area: (room as any).area.toString(),
+        status: (room as any).status,
+        description: (room as any).description || "",
+        amenities: (room as any).amenities || []
       });
     } else {
       setEditingRoom(null);
@@ -258,19 +381,19 @@ export default function OwnerDashboard() {
     setShowRoomModal(true);
   };
 
-  const openTenantModal = (tenant?: any) => {
+  const openTenantModal = (tenant?: unknown) => {
     if (tenant) {
       setEditingTenant(tenant);
       setTenantForm({
-        name: tenant.name,
-        email: tenant.email || "",
-        phone: tenant.phone,
-        idCard: tenant.idCard || "",
-        room: tenant.room,
-        startDate: tenant.startDate,
-        deposit: tenant.deposit?.toString() || "",
-        emergencyContact: tenant.emergencyContact || "",
-        emergencyPhone: tenant.emergencyPhone || ""
+        name: (tenant as any).name,
+        email: (tenant as any).email || "",
+        phone: (tenant as any).phone,
+        idCard: (tenant as any).idCard || "",
+        room: (tenant as any).room,
+        startDate: (tenant as any).startDate,
+        deposit: (tenant as any).deposit?.toString() || "",
+        emergencyContact: (tenant as any).emergencyContact || "",
+        emergencyPhone: (tenant as any).emergencyPhone || ""
       });
     } else {
       setEditingTenant(null);
@@ -289,18 +412,18 @@ export default function OwnerDashboard() {
     setShowTenantModal(true);
   };
 
-  const openBillModal = (bill?: any) => {
+  const openBillModal = (bill?: unknown) => {
     if (bill) {
       setEditingBill(bill);
       setBillForm({
-        room: bill.room,
-        tenant: bill.tenant,
-        type: bill.type,
-        amount: bill.amount.toString(),
-        dueDate: bill.dueDate,
-        description: bill.description || "",
-        electricUsage: bill.electricUsage?.toString() || "",
-        waterUsage: bill.waterUsage?.toString() || ""
+        room: (bill as any).room,
+        tenant: (bill as any).tenant,
+        type: (bill as any).type,
+        amount: (bill as any).amount.toString(),
+        dueDate: (bill as any).dueDate,
+        description: (bill as any).description || "",
+        electricUsage: (bill as any).electricUsage?.toString() || "",
+        waterUsage: (bill as any).waterUsage?.toString() || ""
       });
     } else {
       setEditingBill(null);
@@ -318,7 +441,7 @@ export default function OwnerDashboard() {
     setShowBillModal(true);
   };
 
-  const openReportDetail = (report: any) => {
+  const openReportDetail = (report: unknown) => {
     setSelectedReport(report);
     setShowReportDetailModal(true);
   };
@@ -365,15 +488,15 @@ export default function OwnerDashboard() {
     setShowReportDetailModal(false);
   };
 
-  const openReviewResponseModal = (review: any) => {
+  const openReviewResponseModal = (review: unknown) => {
     setSelectedReview(review);
-    setResponseText(review.response || "");
+    setResponseText((review as any).response || "");
     setShowReviewResponseModal(true);
   };
 
   const handleReviewResponse = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Responding to review:", selectedReview.id, responseText);
+    console.log("Responding to review:", (selectedReview as any).id, responseText);
     alert("Phản hồi đánh giá thành công!");
     setShowReviewResponseModal(false);
     setResponseText("");
@@ -381,18 +504,121 @@ export default function OwnerDashboard() {
   };
 
   // Message handlers
-  const selectConversation = (conversation: any) => {
+  const selectConversation = (conversation: unknown) => {
     setSelectedConversation(conversation);
   };
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim() && selectedConversation) {
-      console.log("Sending message:", newMessage, "to:", selectedConversation.tenant.name);
+      console.log("Sending message:", newMessage, "to:", (selectedConversation as any).tenant.name);
       // In real app, this would send the message via API
       alert("Tin nhắn đã được gửi!");
       setNewMessage("");
     }
+  };
+
+  const openNewMessageModal = () => {
+    setNewMessageForm({
+      tenantId: "",
+      message: ""
+    });
+    setShowNewMessageModal(true);
+  };
+
+  const handleNewMessageSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newMessageForm.tenantId && newMessageForm.message.trim()) {
+      console.log("Starting new conversation with tenant:", newMessageForm.tenantId);
+      console.log("Message:", newMessageForm.message);
+      alert("Tin nhắn mới đã được gửi!");
+      setShowNewMessageModal(false);
+      setNewMessageForm({ tenantId: "", message: "" });
+    }
+  };
+
+  // Filter handlers
+  const getFilteredReports = () => {
+    const reportsData = [
+      {
+        id: 1,
+        issue: "Máy lạnh không hoạt động",
+        room: "101",
+        tenant: "Nguyễn Văn A",
+        priority: "high",
+        date: "2024-02-20",
+        status: "in-progress",
+        description: "Máy lạnh không thổi lạnh từ 2 ngày nay"
+      },
+      {
+        id: 2,
+        issue: "Vòi nước bị rò rỉ",
+        room: "102",
+        tenant: "Trần Thị B",
+        priority: "medium",
+        date: "2024-02-18",
+        status: "completed",
+        description: "Vòi lavabo trong phòng tắm bị rò nước"
+      },
+      {
+        id: 3,
+        issue: "Bóng đèn hỏng",
+        room: "201",
+        tenant: "Lê Văn C",
+        priority: "low",
+        date: "2024-02-25",
+        status: "pending",
+        description: "Bóng đèn phòng ngủ không sáng"
+      }
+    ];
+
+    return reportsData.filter(report => {
+      const statusMatch = reportStatusFilter === "all" || 
+        (reportStatusFilter === "pending" && report.status === "pending") ||
+        (reportStatusFilter === "in-progress" && report.status === "in-progress") ||
+        (reportStatusFilter === "completed" && report.status === "completed");
+      
+      const priorityMatch = reportPriorityFilter === "all" ||
+        (reportPriorityFilter === "high" && report.priority === "high") ||
+        (reportPriorityFilter === "medium" && report.priority === "medium") ||
+        (reportPriorityFilter === "low" && report.priority === "low");
+      
+      return statusMatch && priorityMatch;
+    });
+  };
+
+  const getFilteredReviews = () => {
+    return mockReviews.filter(review => {
+      const ratingMatch = reviewRatingFilter === "all" ||
+        (reviewRatingFilter === "5" && review.rating === 5) ||
+        (reviewRatingFilter === "4" && review.rating === 4) ||
+        (reviewRatingFilter === "3" && review.rating === 3) ||
+        (reviewRatingFilter === "2" && review.rating === 2) ||
+        (reviewRatingFilter === "1" && review.rating === 1);
+      
+      const roomMatch = reviewRoomFilter === "all" ||
+        reviewRoomFilter === review.room;
+      
+      return ratingMatch && roomMatch;
+    });
+  };
+
+  const getReviewStats = () => {
+    const filteredReviews = getFilteredReviews();
+    const totalReviews = filteredReviews.length;
+    const averageRating = totalReviews > 0 
+      ? (filteredReviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews).toFixed(1)
+      : "0.0";
+    
+    const ratingDistribution = [5, 4, 3, 2, 1].map(rating => 
+      filteredReviews.filter(review => review.rating === rating).length
+    );
+
+    return {
+      totalReviews,
+      averageRating,
+      ratingDistribution
+    };
   };
 
   return (
@@ -856,17 +1082,25 @@ export default function OwnerDashboard() {
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-gray-900">Báo cáo sự cố</h2>
               <div className="flex space-x-3">
-                <select className="border border-gray-300 rounded-lg px-3 py-2">
-                  <option>Tất cả trạng thái</option>
-                  <option>Chờ xử lý</option>
-                  <option>Đang xử lý</option>
-                  <option>Hoàn thành</option>
+                <select 
+                  value={reportStatusFilter}
+                  onChange={(e) => setReportStatusFilter(e.target.value)}
+                  className="border border-gray-300 rounded-lg px-3 py-2"
+                >
+                  <option value="all">Tất cả trạng thái</option>
+                  <option value="pending">Chờ xử lý</option>
+                  <option value="in-progress">Đang xử lý</option>
+                  <option value="completed">Hoàn thành</option>
                 </select>
-                <select className="border border-gray-300 rounded-lg px-3 py-2">
-                  <option>Tất cả mức độ</option>
-                  <option>Cao</option>
-                  <option>Trung bình</option>
-                  <option>Thấp</option>
+                <select 
+                  value={reportPriorityFilter}
+                  onChange={(e) => setReportPriorityFilter(e.target.value)}
+                  className="border border-gray-300 rounded-lg px-3 py-2"
+                >
+                  <option value="all">Tất cả mức độ</option>
+                  <option value="high">Cao</option>
+                  <option value="medium">Trung bình</option>
+                  <option value="low">Thấp</option>
                 </select>
               </div>
             </div>
@@ -899,38 +1133,7 @@ export default function OwnerDashboard() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {[
-                    {
-                      id: 1,
-                      issue: "Máy lạnh không hoạt động",
-                      room: "101",
-                      tenant: "Nguyễn Văn A",
-                      priority: "high",
-                      date: "2024-02-20",
-                      status: "in-progress",
-                      description: "Máy lạnh không thổi lạnh từ 2 ngày nay"
-                    },
-                    {
-                      id: 2,
-                      issue: "Vòi nước bị rò rỉ",
-                      room: "102",
-                      tenant: "Trần Thị B",
-                      priority: "medium",
-                      date: "2024-02-18",
-                      status: "completed",
-                      description: "Vòi lavabo trong phòng tắm bị rò nước"
-                    },
-                    {
-                      id: 3,
-                      issue: "Bóng đèn hỏng",
-                      room: "201",
-                      tenant: "Lê Văn C",
-                      priority: "low",
-                      date: "2024-02-25",
-                      status: "pending",
-                      description: "Bóng đèn phòng ngủ không sáng"
-                    }
-                  ].map((report) => (
+                  {getFilteredReports().map((report) => (
                     <tr key={report.id}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
@@ -1001,7 +1204,10 @@ export default function OwnerDashboard() {
                 <div className="text-sm text-gray-500">
                   {mockConversations.reduce((sum, conv) => sum + conv.unreadCount, 0)} tin nhắn chưa đọc
                 </div>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
+                <button 
+                  onClick={openNewMessageModal}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"
+                >
                   <span className="mr-2">+</span>
                   Tin nhắn mới
                 </button>
@@ -1012,44 +1218,58 @@ export default function OwnerDashboard() {
               {/* Conversations List */}
               <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                 <div className="p-4 border-b border-gray-200">
-                  <h3 className="font-semibold text-gray-900">Cuộc trò chuyện</h3>
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-gray-900">Cuộc trò chuyện</h3>
+                    <div className="text-sm text-gray-500">
+                      {mockConversations.filter(conv => conv.isOnline).length} đang online
+                    </div>
+                  </div>
                 </div>
                 <div className="overflow-y-auto h-full">
-                  {mockConversations.map((conversation) => (
-                    <div
-                      key={conversation.id}
-                      onClick={() => selectConversation(conversation)}
-                      className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
-                        selectedConversation?.id === conversation.id ? 'bg-blue-50 border-blue-200' : ''
-                      }`}
-                    >
-                      <div className="flex items-start space-x-3">
-                        <div className="relative">
-                          <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                            {conversation.tenant.avatar}
-                          </div>
-                          {conversation.isOnline && (
-                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-1">
-                            <h4 className="font-medium text-gray-900 truncate">{conversation.tenant.name}</h4>
-                            <span className="text-xs text-gray-500">{conversation.lastMessageTime}</span>
-                          </div>
-                          <p className="text-sm text-gray-600 mb-1">Phòng {conversation.tenant.room}</p>
-                          <p className="text-sm text-gray-500 truncate">{conversation.lastMessage}</p>
-                          {conversation.unreadCount > 0 && (
-                            <div className="mt-2">
-                              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                                {conversation.unreadCount}
-                              </span>
-                            </div>
-                          )}
-                        </div>
+                  {mockConversations.length === 0 ? (
+                    <div className="flex items-center justify-center h-32 text-gray-500">
+                      <div className="text-center">
+                        <div className="text-3xl mb-2">📭</div>
+                        <p className="text-sm">Chưa có cuộc trò chuyện nào</p>
                       </div>
                     </div>
-                  ))}
+                  ) : (
+                    mockConversations.map((conversation) => (
+                      <div
+                        key={conversation.id}
+                        onClick={() => selectConversation(conversation)}
+                        className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-all duration-200 ${
+                          (selectedConversation as any)?.id === conversation.id ? 'bg-blue-50 border-blue-200' : ''
+                        }`}
+                      >
+                        <div className="flex items-start space-x-3">
+                          <div className="relative">
+                            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md">
+                              {conversation.tenant.avatar}
+                            </div>
+                            {conversation.isOnline && (
+                              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse"></div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between mb-1">
+                              <h4 className="font-medium text-gray-900 truncate">{conversation.tenant.name}</h4>
+                              <span className="text-xs text-gray-500">{conversation.lastMessageTime}</span>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-1">Phòng {conversation.tenant.room}</p>
+                            <p className="text-sm text-gray-500 truncate">{conversation.lastMessage}</p>
+                            {conversation.unreadCount > 0 && (
+                              <div className="mt-2">
+                                <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full animate-bounce">
+                                  {conversation.unreadCount}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 
@@ -1062,16 +1282,16 @@ export default function OwnerDashboard() {
                       <div className="flex items-center space-x-3">
                         <div className="relative">
                           <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                            {selectedConversation.tenant.avatar}
+                            {(selectedConversation as any).tenant.avatar}
                           </div>
-                          {selectedConversation.isOnline && (
+                          {(selectedConversation as any).isOnline && (
                             <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
                           )}
                         </div>
                         <div>
-                          <h3 className="font-semibold text-gray-900">{selectedConversation.tenant.name}</h3>
+                          <h3 className="font-semibold text-gray-900">{(selectedConversation as any).tenant.name}</h3>
                           <p className="text-sm text-gray-500">
-                            Phòng {selectedConversation.tenant.room} • {selectedConversation.tenant.phone}
+                            Phòng {(selectedConversation as any).tenant.room} • {(selectedConversation as any).tenant.phone}
                           </p>
                         </div>
                       </div>
@@ -1087,23 +1307,23 @@ export default function OwnerDashboard() {
 
                     {/* Messages */}
                     <div className="flex-1 p-4 overflow-y-auto space-y-4">
-                      {selectedConversation.messages.map((message: any) => (
+                      {(selectedConversation as any).messages.map((message: unknown) => (
                         <div
-                          key={message.id}
-                          className={`flex ${message.sender === 'owner' ? 'justify-end' : 'justify-start'}`}
+                          key={(message as any).id}
+                          className={`flex ${(message as any).sender === 'owner' ? 'justify-end' : 'justify-start'}`}
                         >
                           <div
                             className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-                              message.sender === 'owner'
+                              (message as any).sender === 'owner'
                                 ? 'bg-blue-600 text-white'
                                 : 'bg-gray-100 text-gray-900'
                             }`}
                           >
-                            <p className="text-sm">{message.content}</p>
+                            <p className="text-sm">{(message as any).content}</p>
                             <p className={`text-xs mt-1 ${
-                              message.sender === 'owner' ? 'text-blue-100' : 'text-gray-500'
+                              (message as any).sender === 'owner' ? 'text-blue-100' : 'text-gray-500'
                             }`}>
-                              {message.timestamp}
+                              {(message as any).timestamp}
                             </p>
                           </div>
                         </div>
@@ -1111,31 +1331,45 @@ export default function OwnerDashboard() {
                     </div>
 
                     {/* Message Input */}
-                    <div className="p-4 border-t border-gray-200">
+                    <div className="p-4 border-t border-gray-200 bg-gray-50">
                       <form onSubmit={handleSendMessage} className="flex space-x-3">
                         <input
                           type="text"
                           value={newMessage}
                           onChange={(e) => setNewMessage(e.target.value)}
-                          className="form-input flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+                          className="form-input flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 bg-white"
                           placeholder="Nhập tin nhắn..."
+                          maxLength={500}
                         />
                         <button
                           type="submit"
                           disabled={!newMessage.trim()}
-                          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 font-medium shadow-md hover:shadow-lg disabled:shadow-none"
                         >
-                          Gửi
+                          <span className="hidden sm:inline">Gửi</span>
+                          <span className="sm:hidden">📤</span>
                         </button>
                       </form>
+                      {newMessage.length > 400 && (
+                        <div className="text-xs text-gray-500 mt-1 text-right">
+                          {newMessage.length}/500 ký tự
+                        </div>
+                      )}
                     </div>
                   </>
                 ) : (
-                  <div className="flex-1 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="text-6xl mb-4">💬</div>
+                  <div className="flex-1 flex items-center justify-center bg-gray-50">
+                    <div className="text-center max-w-sm">
+                      <div className="text-6xl mb-4 animate-pulse">💬</div>
                       <h3 className="text-lg font-medium text-gray-900 mb-2">Chọn cuộc trò chuyện</h3>
-                      <p className="text-gray-600">Chọn một khách thuê để bắt đầu nhắn tin</p>
+                      <p className="text-gray-600 mb-4">Chọn một khách thuê từ danh sách bên trái để bắt đầu nhắn tin</p>
+                      <button
+                        onClick={openNewMessageModal}
+                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        <span className="mr-2">+</span>
+                        Tạo tin nhắn mới
+                      </button>
                     </div>
                   </div>
                 )}
@@ -1150,20 +1384,29 @@ export default function OwnerDashboard() {
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-gray-900">Đánh giá từ khách thuê</h2>
               <div className="flex space-x-3">
-                <select className="border border-gray-300 rounded-lg px-3 py-2">
-                  <option>Tất cả đánh giá</option>
-                  <option>5 sao</option>
-                  <option>4 sao</option>
-                  <option>3 sao</option>
-                  <option>2 sao</option>
-                  <option>1 sao</option>
+                <select 
+                  value={reviewRatingFilter}
+                  onChange={(e) => setReviewRatingFilter(e.target.value)}
+                  className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="all">Tất cả đánh giá</option>
+                  <option value="5">5 sao</option>
+                  <option value="4">4 sao</option>
+                  <option value="3">3 sao</option>
+                  <option value="2">2 sao</option>
+                  <option value="1">1 sao</option>
                 </select>
-                <select className="border border-gray-300 rounded-lg px-3 py-2">
-                  <option>Tất cả phòng</option>
-                  <option>Phòng 101</option>
-                  <option>Phòng 102</option>
-                  <option>Phòng 201</option>
-                  <option>Phòng 202</option>
+                <select 
+                  value={reviewRoomFilter}
+                  onChange={(e) => setReviewRoomFilter(e.target.value)}
+                  className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="all">Tất cả phòng</option>
+                  <option value="101">Phòng 101</option>
+                  <option value="102">Phòng 102</option>
+                  <option value="201">Phòng 201</option>
+                  <option value="202">Phòng 202</option>
+                  <option value="203">Phòng 203</option>
                 </select>
               </div>
             </div>
@@ -1174,10 +1417,10 @@ export default function OwnerDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-yellow-100 text-sm">Đánh giá trung bình</p>
-                    <p className="text-3xl font-bold">4.2</p>
+                    <p className="text-3xl font-bold">{getReviewStats().averageRating}</p>
                     <div className="flex items-center mt-1">
                       {[1,2,3,4,5].map(star => (
-                        <span key={star} className={`text-lg ${star <= 4 ? 'text-yellow-200' : 'text-yellow-400'}`}>⭐</span>
+                        <span key={star} className={`text-lg ${star <= Math.floor(parseFloat(getReviewStats().averageRating)) ? 'text-yellow-200' : 'text-yellow-400'}`}>⭐</span>
                       ))}
                     </div>
                   </div>
@@ -1189,8 +1432,10 @@ export default function OwnerDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-green-100 text-sm">Tổng đánh giá</p>
-                    <p className="text-3xl font-bold">24</p>
-                    <p className="text-green-100 text-sm">+3 tuần này</p>
+                    <p className="text-3xl font-bold">{getReviewStats().totalReviews}</p>
+                    <p className="text-green-100 text-sm">
+                      {reviewRatingFilter !== "all" || reviewRoomFilter !== "all" ? "Đã lọc" : "+3 tuần này"}
+                    </p>
                   </div>
                   <div className="text-4xl">📝</div>
                 </div>
@@ -1221,143 +1466,110 @@ export default function OwnerDashboard() {
 
             {/* Reviews List */}
             <div className="space-y-4">
-              {[
-                {
-                  id: 1,
-                  tenant: "Nguyễn Văn A",
-                  room: "101",
-                  rating: 5,
-                  date: "2024-03-01",
-                  review: "Phòng rất sạch sẽ, tiện nghi đầy đủ. Chủ trọ nhiệt tình, hỗ trợ nhanh chóng khi có vấn đề. Vị trí thuận lợi, gần trường học và chợ. Rất hài lòng!",
-                  categories: {
-                    cleanliness: 5,
-                    facilities: 5,
-                    location: 4,
-                    value: 5,
-                    landlord: 5
-                  },
-                  anonymous: false,
-                  response: "Cảm ơn bạn rất nhiều vì đánh giá tích cực! Chúng tôi luôn cố gắng tạo môi trường sống tốt nhất cho các bạn sinh viên. Chúc bạn học tập tốt!",
-                  responseDate: "2024-03-02"
-                },
-                {
-                  id: 2,
-                  tenant: "Ẩn danh",
-                  room: "102",
-                  rating: 4,
-                  date: "2024-02-28",
-                  review: "Phòng khá tốt, giá cả hợp lý. Máy lạnh hoạt động tốt, internet ổn định. Chỉ có điều âm thanh cách âm chưa tốt lắm, đôi khi nghe thấy tiếng ồn từ phòng bên.",
-                  categories: {
-                    cleanliness: 4,
-                    facilities: 4,
-                    location: 4,
-                    value: 4,
-                    landlord: 4
-                  },
-                  anonymous: true
-                },
-                {
-                  id: 3,
-                  tenant: "Trần Thị B",
-                  room: "201",
-                  rating: 4,
-                  date: "2024-02-25",
-                  review: "Phòng thoáng mát, view đẹp. Chủ trọ dễ thương, luôn quan tâm đến khách thuê. Khu vực an ninh tốt, có bảo vệ 24/7.",
-                  categories: {
-                    cleanliness: 4,
-                    facilities: 4,
-                    location: 5,
-                    value: 4,
-                    landlord: 5
-                  },
-                  anonymous: false
-                }
-              ].map((review) => (
-                <div key={review.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center">
-                      <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold mr-4">
-                        {review.anonymous ? "?" : review.tenant.charAt(0)}
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-900">{review.tenant}</h4>
-                        <p className="text-sm text-gray-600">Phòng {review.room} • {review.date}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="flex items-center mb-1">
-                        {[1,2,3,4,5].map(star => (
-                          <span key={star} className={`text-lg ${star <= review.rating ? 'text-yellow-400' : 'text-gray-300'}`}>⭐</span>
-                        ))}
-                        <span className="ml-2 font-bold text-gray-900">{review.rating}/5</span>
-                      </div>
-                      <p className="text-sm text-gray-600">
-                        {review.rating >= 4.5 ? 'Xuất sắc' :
-                         review.rating >= 4 ? 'Rất tốt' :
-                         review.rating >= 3 ? 'Tốt' :
-                         review.rating >= 2 ? 'Trung bình' : 'Cần cải thiện'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <p className="text-gray-700 mb-4 leading-relaxed">{review.review}</p>
-
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
-                    {Object.entries(review.categories).map(([category, rating]) => (
-                      <div key={category} className="text-center">
-                        <p className="text-xs text-gray-600 mb-1">
-                          {category === 'cleanliness' ? 'Vệ sinh' :
-                           category === 'facilities' ? 'Tiện nghi' :
-                           category === 'location' ? 'Vị trí' :
-                           category === 'value' ? 'Giá trị' : 'Chủ trọ'}
-                        </p>
-                        <div className="flex justify-center">
-                          {[1,2,3,4,5].map(star => (
-                            <span key={star} className={`text-sm ${star <= rating ? 'text-yellow-400' : 'text-gray-300'}`}>⭐</span>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Owner Response */}
-                  {review.response && (
-                    <div className="mt-4 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-                      <div className="flex items-start">
-                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mr-3 text-sm">
-                          CT
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center mb-2">
-                            <span className="font-medium text-blue-900">Phản hồi từ chủ trọ</span>
-                            <span className="ml-2 text-sm text-blue-600">{review.responseDate}</span>
-                          </div>
-                          <p className="text-blue-800">{review.response}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-                    <div className="flex space-x-3">
-                      <button
-                        onClick={() => openReviewResponseModal(review)}
-                        className="text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1 rounded-lg hover:bg-blue-50 transition-colors"
-                      >
-                        {review.response ? 'Chỉnh sửa phản hồi' : 'Phản hồi'}
-                      </button>
-                      <button className="text-green-600 hover:text-green-800 text-sm font-medium px-3 py-1 rounded-lg hover:bg-green-50 transition-colors">
-                        Cảm ơn
-                      </button>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-500">
-                      <span className="mr-2">Hữu ích?</span>
-                      <button className="text-green-600 hover:text-green-800 mr-1">👍</button>
-                      <span className="text-xs">12</span>
-                    </div>
-                  </div>
+              {getFilteredReviews().length === 0 ? (
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
+                  <div className="text-6xl mb-4">📝</div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Không có đánh giá nào</h3>
+                  <p className="text-gray-600">
+                    {reviewRatingFilter !== "all" || reviewRoomFilter !== "all" 
+                      ? "Không tìm thấy đánh giá với bộ lọc đã chọn" 
+                      : "Chưa có đánh giá nào từ khách thuê"}
+                  </p>
                 </div>
-              ))}
+              ) : (
+                getFilteredReviews().map((review) => (
+                  <div key={review.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-200">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center">
+                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold mr-4 shadow-md">
+                          {review.tenant === "Ẩn danh" ? "?" : review.tenant.charAt(0)}
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900">{review.tenant}</h4>
+                          <p className="text-sm text-gray-600">Phòng {review.room} • {review.date}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="flex items-center mb-1">
+                          {[1,2,3,4,5].map(star => (
+                            <span key={star} className={`text-lg ${star <= review.rating ? 'text-yellow-400' : 'text-gray-300'}`}>⭐</span>
+                          ))}
+                          <span className="ml-2 font-bold text-gray-900">{review.rating}/5</span>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          {review.rating >= 5 ? 'Xuất sắc' :
+                           review.rating >= 4 ? 'Rất tốt' :
+                           review.rating >= 3 ? 'Tốt' :
+                           review.rating >= 2 ? 'Trung bình' : 'Cần cải thiện'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <p className="text-gray-700 mb-4 leading-relaxed">{review.comment}</p>
+
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
+                      {Object.entries(review.categories).map(([category, rating]) => (
+                        <div key={category} className="text-center">
+                          <p className="text-xs text-gray-500 mb-1 capitalize">
+                            {category === 'cleanliness' ? 'Vệ sinh' :
+                             category === 'amenities' ? 'Tiện nghi' :
+                             category === 'location' ? 'Vị trí' :
+                             category === 'price' ? 'Giá trị' : 'Chủ trọ'}
+                          </p>
+                          <div className="flex justify-center">
+                            {[1,2,3,4,5].map(star => (
+                              <span key={star} className={`text-sm ${star <= rating ? 'text-yellow-400' : 'text-gray-300'}`}>⭐</span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {review.response && (
+                      <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                        <div className="flex items-center mb-2">
+                          <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center mr-2">
+                            <span className="text-white text-xs font-bold">CT</span>
+                          </div>
+                          <span className="text-sm font-medium text-blue-900">Phản hồi từ chủ trọ</span>
+                          <span className="text-xs text-blue-700 ml-auto">{review.responseDate}</span>
+                        </div>
+                        <p className="text-blue-800 text-sm leading-relaxed">{review.response}</p>
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+                      <div className="flex items-center space-x-4">
+                        <button className="text-sm text-gray-500 hover:text-gray-700 flex items-center">
+                          <span className="mr-1">👍</span>
+                          Hữu ích?
+                          <span className="ml-1 bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">
+                            {review.helpfulCount}
+                          </span>
+                        </button>
+                      </div>
+                      <div className="flex space-x-2">
+                        {!review.response && (
+                          <button
+                            onClick={() => openReviewResponseModal(review)}
+                            className="text-sm bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors"
+                          >
+                            Phản hồi
+                          </button>
+                        )}
+                        {review.response && (
+                          <button
+                            onClick={() => openReviewResponseModal(review)}
+                            className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-lg hover:bg-gray-200 transition-colors"
+                          >
+                            Chỉnh sửa phản hồi
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )}
@@ -2121,6 +2333,69 @@ export default function OwnerDashboard() {
                 </div>
               </form>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* New Message Modal */}
+      {showNewMessageModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-lg w-full">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900">Tin nhắn mới</h3>
+              <p className="text-gray-600 mt-1">Gửi tin nhắn tới khách thuê</p>
+            </div>
+            
+            <form onSubmit={handleNewMessageSubmit} className="p-6 space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Chọn khách thuê
+                </label>
+                <select
+                  value={newMessageForm.tenantId}
+                  onChange={(e) => setNewMessageForm(prev => ({ ...prev, tenantId: e.target.value }))}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                >
+                  <option value="">-- Chọn khách thuê --</option>
+                  {mockConversations.map((conv) => (
+                    <option key={conv.id} value={conv.id.toString()}>
+                      {conv.tenant.name} (Phòng {conv.tenant.room})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Nội dung tin nhắn
+                </label>
+                <textarea
+                  value={newMessageForm.message}
+                  onChange={(e) => setNewMessageForm(prev => ({ ...prev, message: e.target.value }))}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  rows={4}
+                  placeholder="Nhập nội dung tin nhắn..."
+                  required
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setShowNewMessageModal(false)}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Gửi tin nhắn
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
